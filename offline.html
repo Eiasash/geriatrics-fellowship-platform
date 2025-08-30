@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - Geriatrics Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+    <div class="text-center p-8">
+        <div class="text-6xl mb-4">📵</div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">You're Offline</h1>
+        <p class="text-gray-600 mb-6">Some features require an internet connection.</p>
+        
+        <div class="bg-white rounded-lg shadow p-6 max-w-md mx-auto">
+            <h2 class="font-semibold mb-3">Available Offline:</h2>
+            <ul class="text-left text-sm text-gray-700 space-y-2">
+                <li>✅ Patient Dashboard (cached data)</li>
+                <li>✅ Clinical Calculators</li>
+                <li>✅ Drug Interaction Checker (basic)</li>
+                <li>✅ Emergency Protocols</li>
+            </ul>
+        </div>
+        
+        <button onclick="window.location.reload()" 
+                class="mt-6 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+            🔄 Try Again
+        </button>
+    </div>
+</body>
+</html>

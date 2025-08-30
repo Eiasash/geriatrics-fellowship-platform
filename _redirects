@@ -1,0 +1,12 @@
+# Redirects file for better URL handling
+/drugs              /drug-interaction-checker.html    301
+/calculators        /comprehensive-tools.html         301
+/emergency          /oncall-copilot.html             301
+/rounds             /patient-dashboard.html          301
+/interactions       /drug-interaction-checker.html    301
+/tools              /comprehensive-tools.html         301
+/exam               /exam-simulator.html             301
+/research           /research-assistant.html         301
+/evidence           /evidence-library.html           301
+/anticoag           /anticoag-synthesizer.html       301
+/notes              /clinical-note-analyzer.html     301

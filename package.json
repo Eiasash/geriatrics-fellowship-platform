@@ -1,0 +1,27 @@
+{
+  "name": "geriatrics-fellowship-platform",
+  "version": "2.0.0",
+  "description": "Comprehensive Geriatrics Fellowship Platform for Shaare Zedek Medical Center",
+  "author": "Dr. Eias Ashhab",
+  "license": "MIT",
+  "scripts": {
+    "build": "echo 'No build required for static HTML'",
+    "serve": "npx serve .",
+    "deploy": "netlify deploy --prod",
+    "deploy:preview": "netlify deploy"
+  },
+  "devDependencies": {},
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/geriatrics-fellowship"
+  },
+  "keywords": [
+    "geriatrics",
+    "medical",
+    "healthcare",
+    "clinical-tools",
+    "fellowship",
+    "shaare-zedek"
+  ]
+}
