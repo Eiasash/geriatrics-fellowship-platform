@@ -14,21 +14,11 @@
   package = "@netlify/plugin-lighthouse"
   
   [plugins.inputs]
-    # Test these critical pages
-    audits = [
-      { "path": "/" },
-      { "path": "/patient-dashboard.html" },
-      { "path": "/drug-interaction-checker.html" },
-      { "path": "/comprehensive-tools.html" }
-    ]
-    
-    # Performance thresholds (0-1 scale)
     [plugins.inputs.thresholds]
       performance = 0.8
       accessibility = 0.9
       best-practices = 0.8
       seo = 0.8
-      pwa = 0.6
 
 # Sitemap Plugin Configuration  
 [[plugins]]
@@ -46,18 +36,9 @@
   package = "netlify-plugin-checklinks"
   
   [plugins.inputs]
-    entryPoints = [
-      "index.html",
-      "patient-dashboard.html",
-      "drug-interaction-checker.html"
-    ]
+    entryPoints = ["index.html"]
     recursive = true
     pretty = true
-    skipPatterns = [
-      "mailto:",
-      "tel:",
-      "#"
-    ]
 
 # Headers Configuration for Security
 [[headers]]

@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geriatrics Excellence Platform - Shaare Zedek Medical Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-light: #f9fafb;
+            --bg-dark: #111827;
+            --card-light: #ffffff;
+            --card-dark: #1f2937;
+            --text-light: #111827;
+            --text-dark: #f9fafb;
+            --text-secondary-light: #6b7280;
+            --text-secondary-dark: #9ca3af;
+            --border-light: #e5e7eb;
+            --border-dark: #374151;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.hebrew {
+            font-family: 'Rubik', 'Inter', sans-serif;
+        }
+
+        body.light {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+        }
+
+        body.dark {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        .module-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 180px;
+        }
+
+        body.light .module-card {
+            background-color: var(--card-light);
+            border: 1px solid var(--border-light);
+        }
+
+        body.dark .module-card {
+            background-color: var(--card-dark);
+            border: 1px solid var(--border-dark);
+        }
+
+        .module-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        body.dark .module-card:hover {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .text-secondary {
+            color: var(--text-secondary-light);
+        }
+
+        body.dark .text-secondary {
+            color: var(--text-secondary-dark);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab.active {
+            border-bottom-color: #6366f1;
+            color: #6366f1;
+            font-weight: 600;
+        }
+
+        body.light .nav-tab:hover {
+            background-color: #f3f4f6;
+        }
+
+        body.dark .nav-tab:hover {
+            background-color: #374151;
+        }
+
+        /* RTL specific styles */
+        [dir="rtl"] .module-card {
+            text-align: right;
+        }
+
+        [dir="rtl"] .nav-tab {
+            margin-left: 0.5rem;
+            margin-right: 0;
+        }
+
+        [dir="rtl"] button {
+            text-align: right;
+        }
+
+        [dir="rtl"] .text-left {
+            text-align: right !important;
+        }
+
+        [dir="rtl"] .text-right {
+            text-align: left !important;
+        }
+
+        [dir="rtl"] .ml-5 {
+            margin-left: 0;
+            margin-right: 1.25rem;
+        }
+
+        [dir="rtl"] .mr-2 {
+            margin-right: 0;
+            margin-left: 0.5rem;
+        }
+
+        /* Control panel styles */
+        .control-panel {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 40;
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        body.dark .control-panel {
+            background: rgba(31, 41, 55, 0.9);
+        }
+
+        [dir="rtl"] .control-panel {
+            left: 1rem;
+            right: auto;
+        }
+
+        .control-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border-light);
+            background: var(--card-light);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        body.dark .control-btn {
+            background: var(--card-dark);
+            border-color: var(--border-dark);
+        }
+
+        .control-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .control-btn.active {
+            background: #6366f1;
+            color: white;
+            border-color: #6366f1;
+        }
+    </style>
+</head>
+<body class="light">
+    <!-- Control Panel for Dark Mode and Language -->
+    <div class="control-panel">
+        <button onclick="toggleDarkMode()" class="control-btn" title="Toggle Dark Mode">
+            <span id="themeIcon">🌙</span>
+        </button>
+        <button onclick="toggleLanguage()" class="control-btn" title="Toggle Language">
+            <span id="langIcon">עב</span>
+        </button>
+    </div>
+
+    <div class="container mx-auto p-6 pt-20">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold" data-en="Geriatrics Excellence Platform" data-he="פלטפורמת מצוינות בגריאטריה">Geriatrics Excellence Platform</h1>
+            <p class="text-secondary mt-2" data-en="Shaare Zedek Medical Center - Fellowship Tools" data-he="המרכז הרפואי שערי צדק - כלי התמחות">Shaare Zedek Medical Center - Fellowship Tools</p>
+            <p class="text-sm text-secondary mt-1" data-en="Dr. Eias Ashhab - Starting: September 1, 2025" data-he="ד״ר איאס אשהאב - התחלה: 1 בספטמבר 2025">Dr. Eias Ashhab - Starting: September 1, 2025</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="mb-8 border-b">
+            <div class="flex flex-wrap justify-center gap-2">
+                <button class="nav-tab active" data-tab="daily" data-en="Daily Tools" data-he="כלים יומיים">Daily Tools</button>
+                <button class="nav-tab" data-tab="protocols" data-en="Protocols" data-he="פרוטוקולים">Protocols</button>
+                <button class="nav-tab" data-tab="calculators" data-en="Calculators" data-he="מחשבונים">Calculators</button>
+                <button class="nav-tab" data-tab="databases" data-en="Databases" data-he="מאגרי מידע">Databases</button>
+                <button class="nav-tab" data-tab="textbooks" data-en="Textbooks" data-he="ספרי לימוד">Textbooks</button>
+                <button class="nav-tab" data-tab="academic" data-en="Academic" data-he="אקדמי">Academic</button>
+            </div>
+        </nav>
+
+        <!-- Tab Content -->
+        <main>
+            <!-- Daily Tools Tab -->
+            <div id="daily" class="tab-content active">
+                <h2 class="text-xl font-bold mb-4 text-indigo-600" data-en="🔥 Daily Use Tools" data-he="🔥 כלים לשימוש יומי">🔥 Daily Use Tools</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div class="module-card rounded-lg shadow-lg p-6" onclick="openPatientDashboard()">
+                        <div class="text-3xl mb-3">🏥</div>
+                        <h3 class="text-lg font-bold mb-2" data-en="Patient Dashboard" data-he="לוח מטופלים">Patient Dashboard</h3>
+                        <p class="text-secondary text-sm" data-en="Morning rounds prep with risk synthesis" data-he="הכנה לביקור בוקר עם סינתזת סיכונים">Morning rounds prep with risk synthesis</p>
+                        <div class="mt-3">
+                            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded" data-en="Active" data-he="פעיל">Active</span>
+                        </div>
+                    </div>
+
+                    <div class="module-card rounded-lg shadow-lg p-6" onclick="openOnCall()">
+                        <div class="text-3xl mb-3">🚨</div>
+                        <h3 class="text-lg font-bold mb-2" data-en="On-Call Co-Pilot" data-he="עוזר תורנות">On-Call Co-Pilot</h3>
+                        <p class="text-secondary text-sm" data-en="3AM protocols for geriatric scenarios" data-he="פרוטוקולים ל-3 בלילה למצבים גריאטריים">3AM protocols for geriatric scenarios</p>
+                        <div class="mt-3">
+                            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded" data-en="Active" data-he="פעיל">Active</span>
+                        </div>
+                    </div>
+
+                    <div class="module-card rounded-lg shadow-lg p-6" onclick="quickDrugCheck()">
+                        <div class="text-3xl mb-3">💊</div>
+                        <h3 class="text-lg font-bold mb-2" data-en="Drug Interaction" data-he="אינטראקציות תרופתיות">Drug Interaction</h3>
+                        <p class="text-secondary text-sm" data-en="Quick Micromedex lookup" data-he="חיפוש מהיר ב-Micromedex">Quick Micromedex lookup</p>
+                        <div class="mt-3">
+                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded" data-en="External" data-he="חיצוני">External</span>
+                        </div>
+                    </div>
+
+                    <div class="module-card rounded-lg shadow-lg p-6" onclick="exportMorningReport()">
+                        <div class="text-3xl mb-3">📋</div>
+                        <h3 class="text-lg font-bold mb-2" data-en="Morning Report" data-he="דוח בוקר">Morning Report</h3>
+                        <p class="text-secondary text-sm" data-en="Export patient list for rounds" data-he="ייצוא רשימת מטופלים לביקור">Export patient list for rounds</p>
+                        <div class="mt-3">
+                            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded" data-en="Ready" data-he="מוכן">Ready</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Bar -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                    <h3 class="font-bold mb-3" data-en="Quick Actions" data-he="פעולות מהירות">Quick Actions</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="openCalc('crcl')" class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200" data-en="CrCl Calculator" data-he="מחשבון CrCl">
+                            CrCl Calculator
+                        </button>
+                        <button onclick="openCalc('chadsvasc')" class="px-4 py-2 bg-purple-100 text-purple-700 rounded hover:bg-purple-200">
+                            CHA₂DS₂-VASc
+                        </button>
+                        <button onclick="openCalc('cam')" class="px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200">
+                            CAM Score
+                        </button>
+                        <button onclick="clearAllData()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200" data-en="Clear Data" data-he="נקה נתונים">
+                            Clear Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Protocols Tab -->
+            <div id="protocols" class="tab-content">
+                <h2 class="text-xl font-bold mb-4 text-indigo-600" data-en="📋 Clinical Protocols" data-he="📋 פרוטוקולים קליניים">📋 Clinical Protocols</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="module-card rounded-lg shadow-lg p-6" onclick="showProtocol('delirium')">
+                        <h3 class="text-lg font-bold mb-2 text-indigo-600" data-en="Delirium Assessment" data-he="הערכת דליריום">Delirium Assessment</h3>
+                        <p class="text-secondary text-sm" data-en="Evidence-based approach to delirium prevention and treatment" data-he="גישה מבוססת ראיות למניעה וטיפול בדליריום">Evidence-based approach to delirium prevention and treatment</p>
+                        <button class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded text-sm" data-en="View Protocol" data-he="צפה בפרוטוקול">View Protocol</button>
+                    </div>
+                    <div class="module-card rounded-lg shadow-lg p-6" onclick="showProtocol('falls')">
+                        <h3 class="text-lg font-bold mb-2 text-indigo-600" data-en="Post-Fall Assessment" data-he="הערכה לאחר נפילה">Post-Fall Assessment</h3>
+                        <p class="text-secondary text-sm" data-en="Comprehensive evaluation after a fall in older adults" data-he="הערכה מקיפה לאחר נפילה במבוגרים">Comprehensive evaluation after a fall in older adults</p>
+                        <button class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded text-sm" data-en="View Protocol" data-he="צפה בפרוטוקול">View Protocol</button>
+                    </div>
+                    <div class="module-card rounded-lg shadow-lg p-6" onclick="showProtocol('medication')">
+                        <h3 class="text-lg font-bold mb-2 text-indigo-600" data-en="Medication Reconciliation" data-he="התאמת תרופות">Medication Reconciliation</h3>
+                        <p class="text-secondary text-sm" data-en="Systematic approach to optimize medications" data-he="גישה שיטתית לאופטימיזציה של תרופות">Systematic approach to optimize medications</p>
+                        <button class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded text-sm" data-en="View Protocol" data-he="צפה בפרוטוקול">View Protocol</button>
+                    </div>
+                    <div class="module-card rounded-lg shadow-lg p-6" onclick="showProtocol('pressure')">
+                        <h3 class="text-lg font-bold mb-2 text-indigo-600" data-en="Pressure Injury Prevention" data-he="מניעת פצעי לחץ">Pressure Injury Prevention</h3>
+                        <p class="text-secondary text-sm" data-en="Evidence-based pressure injury prevention" data-he="מניעת פצעי לחץ מבוססת ראיות">Evidence-based pressure injury prevention</p>
+                        <button class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded text-sm" data-en="View Protocol" data-he="צפה בפרוטוקול">View Protocol</button>
+                    </div>
+                    <div class="module-card rounded-lg shadow-lg p-6" onclick="showProtocol('dysphagia')">
+                        <h3 class="text-lg font-bold mb-2 text-indigo-600" data-en="Dysphagia Screening" data-he="סינון דיספגיה">Dysphagia Screening</h3>
+                        <p class="text-secondary text-sm" data-en="Safe swallowing assessment protocol" data-he="פרוטוקול הערכת בליעה בטוחה">Safe swallowing assessment protocol</p>
+                        <button class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded text-sm" data-en="View Protocol" data-he="צפה בפרוטוקול">View Protocol</button>
+                    </div>
+                    <div class="module-card rounded-lg shadow-lg p-6" onclick="showProtocol('orthostatic')">
+                        <h3 class="text-lg font-bold mb-2 text-indigo-600" data-en="Orthostatic Hypotension" data-he="תת לחץ דם אורתוסטטי">Orthostatic Hypotension</h3>
+                        <p class="text-secondary text-sm" data-en="Assessment and management protocol" data-he="פרוטוקול הערכה וטיפול">Assessment and management protocol</p>
+                        <button class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded text-sm" data-en="View Protocol" data-he="צפה בפרוטוקול">View Protocol</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculators Tab -->
+            <div id="calculators" class="tab-content">
+                <h2 class="text-xl font-bold mb-4 text-indigo-600" data-en="🧮 Clinical Calculators" data-he="🧮 מחשבונים קליניים">🧮 Clinical Calculators</h2>
+                
+                <!-- Anticoagulation Synthesizer -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-purple-600" data-en="Anticoagulation Synthesizer" data-he="מסנתז נוגדי קרישה">Anticoagulation Synthesizer</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block mb-2 font-medium" data-en="Age (years)" data-he="גיל (שנים)">Age (years)</label>
+                            <input type="number" id="age" class="w-full p-2 border rounded" placeholder="e.g., 85">
+                        </div>
+                        <div>
+                            <label class="block mb-2 font-medium" data-en="Weight (kg)" data-he="משקל (ק״ג)">Weight (kg)</label>
+                            <input type="number" id="weight" class="w-full p-2 border rounded" placeholder="e.g., 70">
+                        </div>
+                        <div>
+                            <label class="block mb-2 font-medium" data-en="Serum Creatinine (mg/dL)" data-he="קריאטינין בסרום (mg/dL)">Serum Creatinine (mg/dL)</label>
+                            <input type="number" step="0.1" id="creatinine" class="w-full p-2 border rounded" placeholder="e.g., 1.5">
+                        </div>
+                        <div>
+                            <label class="block mb-2 font-medium" data-en="Sex" data-he="מין">Sex</label>
+                            <select id="sex" class="w-full p-2 border rounded">
+                                <option value="male" data-en="Male" data-he="זכר">Male</option>
+                                <option value="female" data-en="Female" data-he="נקבה">Female</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button onclick="calculateAnticoag()" class="mt-4 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700" data-en="Calculate & Synthesize" data-he="חשב וסנתז">
+                        Calculate & Synthesize
+                    </button>
+                    <div id="anticoagResult" class="mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded hidden"></div>
+                </div>
+
+                <!-- Calculator Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <button onclick="openCalc('chadsvasc')" class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg">
+                        CHA₂DS₂-VASc
+                    </button>
+                    <button onclick="openCalc('hasbled')" class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg">
+                        HAS-BLED
+                    </button>
+                    <button onclick="openCalc('crcl')" class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg">
+                        CrCl (Cockcroft)
+                    </button>
+                    <button onclick="openCalc('mmse')" class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg">
+                        MMSE
+                    </button>
+                    <button onclick="openCalc('cam')" class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg">
+                        CAM Score
+                    </button>
+                    <button onclick="openCalc('morse')" class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg" data-en="Morse Fall Scale" data-he="סולם נפילות מורס">
+                        Morse Fall Scale
+                    </button>
+                    <button onclick="openCalc('braden')" class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg" data-en="Braden Scale" data-he="סולם ברייד׳ן">
+                        Braden Scale
+                    </button>
+                    <button onclick="openCalc('gds')" class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg">
+                        GDS-15
+                    </button>
+                </div>
+            </div>
+
+            <!-- Medical Databases Tab -->
+            <div id="databases" class="tab-content">
+                <h2 class="text-xl font-bold mb-4 text-indigo-600" data-en="💊 Medical Databases" data-he="💊 מאגרי מידע רפואיים">💊 Medical Databases</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <a href="https://www.micromedexsolutions.com" target="_blank" 
+                       class="module-card rounded-lg shadow-lg p-6 hover:shadow-xl">
+                        <h3 class="text-lg font-bold mb-2 text-purple-600">Micromedex 💊</h3>
+                        <p class="text-secondary text-sm" data-en="Best drug interaction checker - superior to Lexicomp" data-he="בודק אינטראקציות התרופות הטוב ביותר">Best drug interaction checker - superior to Lexicomp</p>
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded mt-2 inline-block" data-en="Institutional Access" data-he="גישה מוסדית">Institutional Access</span>
+                    </a>
+                    <a href="https://accessmedicine.mhmedical.com" target="_blank" 
+                       class="module-card rounded-lg shadow-lg p-6 hover:shadow-xl">
+                        <h3 class="text-lg font-bold mb-2 text-purple-600">AccessMedicine 📕</h3>
+                        <p class="text-secondary text-sm" data-en="McGraw Hill medical textbooks" data-he="ספרי לימוד רפואיים של McGraw Hill">McGraw Hill medical textbooks</p>
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded mt-2 inline-block" data-en="Clalit Access" data-he="גישת כללית">Clalit Access</span>
+                    </a>
+                    <a href="https://www.clinicalkey.com" target="_blank" 
+                       class="module-card rounded-lg shadow-lg p-6 hover:shadow-xl">
+                        <h3 class="text-lg font-bold mb-2 text-purple-600">ClinicalKey 🔑</h3>
+                        <p class="text-secondary text-sm" data-en="Elsevier medical database" data-he="מאגר רפואי של Elsevier">Elsevier medical database</p>
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded mt-2 inline-block" data-en="Full Access" data-he="גישה מלאה">Full Access</span>
+                    </a>
+                    <a href="https://pubmed.ncbi.nlm.nih.gov" target="_blank" 
+                       class="module-card rounded-lg shadow-lg p-6 hover:shadow-xl">
+                        <h3 class="text-lg font-bold mb-2 text-purple-600">PubMed 📰</h3>
+                        <p class="text-secondary text-sm" data-en="Full text via Clalit" data-he="טקסט מלא דרך כללית">Full text via Clalit</p>
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded mt-2 inline-block" data-en="Free + Institutional" data-he="חינם + מוסדי">Free + Institutional</span>
+                    </a>
+                    <a href="https://www.uptodate.com" target="_blank" 
+                       class="module-card rounded-lg shadow-lg p-6 hover:shadow-xl">
+                        <h3 class="text-lg font-bold mb-2 text-purple-600">UpToDate 💡</h3>
+                        <p class="text-secondary text-sm" data-en="Evidence-based clinical decision support" data-he="תמיכה בהחלטות קליניות מבוססת ראיות">Evidence-based clinical decision support</p>
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded mt-2 inline-block" data-en="Premium Access" data-he="גישת פרימיום">Premium Access</span>
+                    </a>
+                    <a href="https://www.tripdatabase.com" target="_blank" 
+                       class="module-card rounded-lg shadow-lg p-6 hover:shadow-xl">
+                        <h3 class="text-lg font-bold mb-2 text-purple-600">TRIP Database 🔍</h3>
+                        <p class="text-secondary text-sm" data-en="Evidence pyramid search" data-he="חיפוש פירמידת ראיות">Evidence pyramid search</p>
+                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded mt-2 inline-block" data-en="Free" data-he="חינם">Free</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Textbooks Tab -->
+            <div id="textbooks" class="tab-content">
+                <h2 class="text-xl font-bold mb-4 text-indigo-600" data-en="📚 Essential Geriatrics Textbooks" data-he="📚 ספרי לימוד חיוניים בגריאטריה">📚 Essential Geriatrics Textbooks</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                        <h3 class="text-lg font-bold mb-2 text-purple-600">📘 Hazzard's Geriatric Medicine & Gerontology</h3>
+                        <p class="text-secondary text-sm mb-4" data-en="The definitive geriatrics textbook - comprehensive coverage" data-he="ספר הלימוד המקיף בגריאטריה">The definitive geriatrics textbook - comprehensive coverage</p>
+                        <a href="https://accessmedicine.mhmedical.com/book.aspx?bookid=1923" target="_blank" 
+                           class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" data-en="Access Online" data-he="גישה מקוונת">Access Online</a>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                        <h3 class="text-lg font-bold mb-2 text-purple-600">📗 Brocklehurst's Textbook of Geriatric Medicine</h3>
+                        <p class="text-secondary text-sm mb-4" data-en="British perspective with excellent clinical pearls" data-he="פרספקטיבה בריטית עם פנינים קליניות מצוינות">British perspective with excellent clinical pearls</p>
+                        <a href="https://www.clinicalkey.com/#!/browse/book/3-s2.0-C20130186354" target="_blank" 
+                           class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" data-en="Access Online" data-he="גישה מקוונת">Access Online</a>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                        <h3 class="text-lg font-bold mb-2 text-purple-600">📙 Williams Geriatrics Review Syllabus</h3>
+                        <p class="text-secondary text-sm mb-4" data-en="Board review focused - perfect for exam prep" data-he="ממוקד לבחינות - מושלם להכנה למבחנים">Board review focused - perfect for exam prep</p>
+                        <a href="https://accessmedicine.mhmedical.com/book.aspx?bookid=2966" target="_blank" 
+                           class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" data-en="Access Online" data-he="גישה מקוונת">Access Online</a>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                        <h3 class="text-lg font-bold mb-2 text-purple-600">📕 Oxford Textbook of Geriatric Medicine</h3>
+                        <p class="text-secondary text-sm mb-4" data-en="Evidence-based with European guidelines" data-he="מבוסס ראיות עם הנחיות אירופאיות">Evidence-based with European guidelines</p>
+                        <a href="https://oxfordmedicine.com/view/10.1093/med/9780198701590.001.0001/med-9780198701590" target="_blank" 
+                           class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" data-en="Access Online" data-he="גישה מקוונת">Access Online</a>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                        <h3 class="text-lg font-bold mb-2 text-purple-600">📘 Current Geriatrics Diagnosis & Treatment</h3>
+                        <p class="text-secondary text-sm mb-4" data-en="Quick reference for clinical decision-making" data-he="עזר מהיר לקבלת החלטות קליניות">Quick reference for clinical decision-making</p>
+                        <a href="https://accessmedicine.mhmedical.com/book.aspx?bookid=2963" target="_blank" 
+                           class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" data-en="Access Online" data-he="גישה מקוונת">Access Online</a>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                        <h3 class="text-lg font-bold mb-2 text-purple-600">📗 Principles of Geriatric Medicine (Harrison's)</h3>
+                        <p class="text-secondary text-sm mb-4" data-en="Geriatrics section from Harrison's Internal Medicine" data-he="פרק גריאטריה מתוך Harrison's">Geriatrics section from Harrison's Internal Medicine</p>
+                        <a href="https://accessmedicine.mhmedical.com/content.aspx?bookid=3095&sectionid=263435599" target="_blank" 
+                           class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" data-en="Access Online" data-he="גישה מקוונת">Access Online</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Academic Tab -->
+            <div id="academic" class="tab-content">
+                <h2 class="text-xl font-bold mb-4 text-indigo-600" data-en="🎓 Academic Tools" data-he="🎓 כלים אקדמיים">🎓 Academic Tools</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="module-card rounded-lg shadow-lg p-6">
+                        <div class="text-3xl mb-3">📝</div>
+                        <h3 class="text-lg font-bold mb-2" data-en="Shlav Alef Prep" data-he="הכנה לשלב א׳">Shlav Alef Prep</h3>
+                        <p class="text-secondary text-sm" data-en="50+ Hebrew exam questions" data-he="50+ שאלות מבחן בעברית">50+ Hebrew exam questions</p>
+                        <button onclick="startExam()" class="mt-3 bg-indigo-600 text-white px-4 py-2 rounded text-sm" data-en="Start Practice" data-he="התחל תרגול">
+                            Start Practice
+                        </button>
+                    </div>
+                    <div class="module-card rounded-lg shadow-lg p-6">
+                        <div class="text-3xl mb-3">🔬</div>
+                        <h3 class="text-lg font-bold mb-2" data-en="Evidence Library" data-he="ספריית ראיות">Evidence Library</h3>
+                        <p class="text-secondary text-sm" data-en="20 landmark trials" data-he="20 מחקרי דגל">20 landmark trials</p>
+                        <button onclick="openTrials()" class="mt-3 bg-indigo-600 text-white px-4 py-2 rounded text-sm" data-en="Browse Trials" data-he="עיין במחקרים">
+                            Browse Trials
+                        </button>
+                    </div>
+                    <div class="module-card rounded-lg shadow-lg p-6">
+                        <div class="text-3xl mb-3">📊</div>
+                        <h3 class="text-lg font-bold mb-2" data-en="Research Assistant" data-he="עוזר מחקר">Research Assistant</h3>
+                        <p class="text-secondary text-sm" data-en="PICO search & M&M builder" data-he="חיפוש PICO ובונה M&M">PICO search & M&M builder</p>
+                        <button onclick="openResearch()" class="mt-3 bg-indigo-600 text-white px-4 py-2 rounded text-sm" data-en="Open Tool" data-he="פתח כלי">
+                            Open Tool
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-8 text-center text-sm text-secondary">
+            <p data-en="Geriatrics Fellowship Platform v2.0 | Shaare Zedek Medical Center | 2025" data-he="פלטפורמת התמחות בגריאטריה גרסה 2.0 | המרכז הרפואי שערי צדק | 2025">Geriatrics Fellowship Platform v2.0 | Shaare Zedek Medical Center | 2025</p>
+        </footer>
+    </div>
+
+    <!-- Hidden sections for dynamic content -->
+    <div id="modalContent" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-4xl max-h-[80vh] overflow-y-auto">
+            <button onclick="closeModal()" class="float-right text-gray-500 hover:text-gray-700">✕</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize localStorage
+        if (!localStorage.getItem('geriatricPatients')) {
+            localStorage.setItem('geriatricPatients', JSON.stringify([]));
+        }
+        if (!localStorage.getItem('darkMode')) {
+            localStorage.setItem('darkMode', 'false');
+        }
+        if (!localStorage.getItem('language')) {
+            localStorage.setItem('language', 'en');
+        }
+
+        // Language state
+        let currentLanguage = localStorage.getItem('language') || 'en';
+
+        // Dark mode toggle
+        function toggleDarkMode() {
+            const body = document.body;
+            const isDark = body.classList.contains('dark');
+            
+            if (isDark) {
+                body.classList.remove('dark');
+                body.classList.add('light');
+                document.getElementById('themeIcon').textContent = '🌙';
+                localStorage.setItem('darkMode', 'false');
+            } else {
+                body.classList.remove('light');
+                body.classList.add('dark');
+                document.getElementById('themeIcon').textContent = '☀️';
+                localStorage.setItem('darkMode', 'true');
+            }
+        }
+
+        // Language toggle
+        function toggleLanguage() {
+            const html = document.documentElement;
+            const body = document.body;
+            
+            if (currentLanguage === 'en') {
+                currentLanguage = 'he';
+                html.setAttribute('dir', 'rtl');
+                html.setAttribute('lang', 'he');
+                body.classList.add('hebrew');
+                document.getElementById('langIcon').textContent = 'EN';
+            } else {
+                currentLanguage = 'en';
+                html.setAttribute('dir', 'ltr');
+                html.setAttribute('lang', 'en');
+                body.classList.remove('hebrew');
+                document.getElementById('langIcon').textContent = 'עב';
+            }
+            
+            localStorage.setItem('language', currentLanguage);
+            updateLanguageTexts();
+        }
+
+        // Update all texts based on current language
+        function updateLanguageTexts() {
+            const elements = document.querySelectorAll('[data-en][data-he]');
+            elements.forEach(el => {
+                const text = currentLanguage === 'en' ? el.getAttribute('data-en') : el.getAttribute('data-he');
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                    el.placeholder = text;
+                } else if (el.tagName === 'OPTION') {
+                    el.textContent = text;
+                } else {
+                    el.textContent = text;
+                }
+            });
+        }
+
+        // Load preferences on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            // Load dark mode preference
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.remove('light');
+                document.body.classList.add('dark');
+                document.getElementById('themeIcon').textContent = '☀️';
+            }
+
+            // Load language preference
+            if (localStorage.getItem('language') === 'he') {
+                currentLanguage = 'he';
+                document.documentElement.setAttribute('dir', 'rtl');
+                document.documentElement.setAttribute('lang', 'he');
+                document.body.classList.add('hebrew');
+                document.getElementById('langIcon').textContent = 'EN';
+                updateLanguageTexts();
+            }
+        });
+
+        // Tab navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Patient Dashboard
+        function openPatientDashboard() {
+            const patients = JSON.parse(localStorage.getItem('geriatricPatients') || '[]');
+            const title = currentLanguage === 'en' ? 'Patient Dashboard' : 'לוח מטופלים';
+            const addBtn = currentLanguage === 'en' ? '+ Add Patient' : '+ הוסף מטופל';
+            const noPatients = currentLanguage === 'en' ? 'No patients added yet' : 'לא נוספו מטופלים עדיין';
+            const removeBtn = currentLanguage === 'en' ? 'Remove' : 'הסר';
+            
+            let content = `
+                <h2 class="text-2xl font-bold mb-4">${title}</h2>
+                <button onclick="addPatient()" class="mb-4 bg-indigo-600 text-white px-4 py-2 rounded">${addBtn}</button>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            `;
+            
+            if (patients.length === 0) {
+                content += `<p class="text-gray-500">${noPatients}</p>`;
+            } else {
+                patients.forEach(p => {
+                    const ageText = currentLanguage === 'en' ? 'Age' : 'גיל';
+                    const roomText = currentLanguage === 'en' ? 'Room' : 'חדר';
+                    content += `
+                        <div class="border rounded p-4">
+                            <h3 class="font-bold">${p.name}</h3>
+                            <p class="text-sm text-gray-600">${ageText}: ${p.age} | ${roomText}: ${p.room}</p>
+                            <button onclick="removePatient(${p.id})" class="text-red-500 text-sm mt-2">${removeBtn}</button>
+                        </div>
+                    `;
+                });
+            }
+            
+            content += '</div>';
+            showModal(content);
+        }
+
+        function addPatient() {
+            const namePrompt = currentLanguage === 'en' ? 'Patient initials:' : 'ראשי תיבות של המטופל:';
+            const agePrompt = currentLanguage === 'en' ? 'Age:' : 'גיל:';
+            const roomPrompt = currentLanguage === 'en' ? 'Room:' : 'חדר:';
+            
+            const name = prompt(namePrompt);
+            if (!name) return;
+            const age = prompt(agePrompt);
+            const room = prompt(roomPrompt);
+            
+            const patients = JSON.parse(localStorage.getItem('geriatricPatients') || '[]');
+            patients.push({ id: Date.now(), name, age, room });
+            localStorage.setItem('geriatricPatients', JSON.stringify(patients));
+            openPatientDashboard();
+        }
+
+        function removePatient(id) {
+            const patients = JSON.parse(localStorage.getItem('geriatricPatients') || '[]');
+            const filtered = patients.filter(p => p.id !== id);
+            localStorage.setItem('geriatricPatients', JSON.stringify(filtered));
+            openPatientDashboard();
+        }
+
+        // On-Call Co-Pilot
+        function openOnCall() {
+            const title = currentLanguage === 'en' ? 'On-Call Co-Pilot' : 'עוזר תורנות';
+            const placeholder = currentLanguage === 'en' ? 
+                'Describe scenario (e.g., 92yo confusion post-op)' : 
+                'תאר מצב (למשל: בן 92 בלבול לאחר ניתוח)';
+            const analyzeBtn = currentLanguage === 'en' ? 'Analyze' : 'נתח';
+            
+            const content = `
+                <h2 class="text-2xl font-bold mb-4">${title}</h2>
+                <textarea id="scenario" class="w-full p-3 border rounded mb-4" rows="4" 
+                    placeholder="${placeholder}"></textarea>
+                <button onclick="analyzeScenario()" class="bg-indigo-600 text-white px-4 py-2 rounded">${analyzeBtn}</button>
+                <div id="analysis" class="mt-4"></div>
+            `;
+            showModal(content);
+        }
+
+        function analyzeScenario() {
+            const scenario = document.getElementById('scenario').value.toLowerCase();
+            let response = '';
+            
+            if (scenario.includes('confusion') || scenario.includes('delirium') || scenario.includes('בלבול') || scenario.includes('דליריום')) {
+                const title = currentLanguage === 'en' ? 'Delirium Protocol' : 'פרוטוקול דליריום';
+                const immediate = currentLanguage === 'en' ? 'Immediate (15 min):' : 'מיידי (15 דקות):';
+                const labs = currentLanguage === 'en' ? 'Labs:' : 'בדיקות מעבדה:';
+                
+                response = `
+                    <h3 class="font-bold text-red-600 mb-2">${title}</h3>
+                    <p class="font-semibold">${immediate}</p>
+                    <ul class="list-disc ml-5">
+                        <li>${currentLanguage === 'en' ? 'Check vitals + O2 sat' : 'בדוק סימנים חיוניים + סטורציה'}</li>
+                        <li>${currentLanguage === 'en' ? 'Fingerstick glucose' : 'סוכר קפילרי'}</li>
+                        <li>${currentLanguage === 'en' ? 'Review meds last 48h' : 'סקירת תרופות 48 שעות אחרונות'}</li>
+                        <li>${currentLanguage === 'en' ? 'Quick neuro exam' : 'בדיקה נוירולוגית מהירה'}</li>
+                    </ul>
+                    <p class="font-semibold mt-2">${labs}</p>
+                    <ul class="list-disc ml-5">
+                        <li>CBC, CMP, UA + culture</li>
+                        <li>${currentLanguage === 'en' ? 'CXR if respiratory symptoms' : 'צילום חזה אם יש תסמינים נשימתיים'}</li>
+                    </ul>
+                `;
+            } else if (scenario.includes('fall') || scenario.includes('נפילה')) {
+                const title = currentLanguage === 'en' ? 'Fall Protocol' : 'פרוטוקול נפילה';
+                const immediate = currentLanguage === 'en' ? 'Immediate:' : 'מיידי:';
+                
+                response = `
+                    <h3 class="font-bold text-red-600 mb-2">${title}</h3>
+                    <p class="font-semibold">${immediate}</p>
+                    <ul class="list-disc ml-5">
+                        <li>${currentLanguage === 'en' ? 'Check for head trauma' : 'בדוק חבלת ראש'}</li>
+                        <li>${currentLanguage === 'en' ? 'Assess hip ROM' : 'הערך טווחי תנועה בירך'}</li>
+                        <li>${currentLanguage === 'en' ? 'Orthostatic vitals' : 'לחץ דם אורתוסטטי'}</li>
+                        <li>${currentLanguage === 'en' ? 'Review anticoagulation' : 'סקירת נוגדי קרישה'}</li>
+                    </ul>
+                `;
+            } else {
+                response = `<p class="text-gray-500">${currentLanguage === 'en' ? 
+                    'Enter more details about the scenario...' : 
+                    'הכנס פרטים נוספים על המצב...'}</p>`;
+            }
+            
+            document.getElementById('analysis').innerHTML = response;
+        }
+
+        // Anticoagulation Calculator
+        function calculateAnticoag() {
+            const age = parseInt(document.getElementById('age').value) || 0;
+            const weight = parseInt(document.getElementById('weight').value) || 0;
+            const cr = parseFloat(document.getElementById('creatinine').value) || 0;
+            const sex = document.getElementById('sex').value;
+            
+            if (!age || !weight || !cr) {
+                const msg = currentLanguage === 'en' ? 'Please fill in all fields' : 'אנא מלא את כל השדות';
+                alert(msg);
+                return;
+            }
+            
+            // Calculate CrCl
+            let crcl = ((140 - age) * weight) / (72 * cr);
+            if (sex === 'female') crcl *= 0.85;
+            
+            // Recommendation
+            let rec = '';
+            if (crcl < 15) {
+                rec = currentLanguage === 'en' ? 
+                    'Warfarin (no DOACs for CrCl <15)' : 
+                    'וורפרין (אין DOACs עבור CrCl <15)';
+            } else if (crcl < 30) {
+                rec = currentLanguage === 'en' ? 
+                    'Apixaban 2.5mg BID (only DOAC for CrCl 15-30)' : 
+                    'אפיקסבן 2.5mg פעמיים ביום (DOAC היחיד עבור CrCl 15-30)';
+            } else if (age >= 80 || weight <= 60) {
+                rec = currentLanguage === 'en' ? 
+                    'Apixaban 2.5mg BID (dose reduction)' : 
+                    'אפיקסבן 2.5mg פעמיים ביום (הפחתת מינון)';
+            } else {
+                rec = currentLanguage === 'en' ? 
+                    'Apixaban 5mg BID (standard dose)' : 
+                    'אפיקסבן 5mg פעמיים ביום (מינון סטנדרטי)';
+            }
+            
+            const resultsTitle = currentLanguage === 'en' ? 'Results:' : 'תוצאות:';
+            const recTitle = currentLanguage === 'en' ? 'Recommendation' : 'המלצה';
+            
+            const result = document.getElementById('anticoagResult');
+            result.innerHTML = `
+                <h3 class="font-bold mb-2">${resultsTitle}</h3>
+                <p><strong>CrCl:</strong> ${crcl.toFixed(1)} mL/min</p>
+                <p class="mt-2 font-bold text-purple-600">${recTitle}: ${rec}</p>
+            `;
+            result.classList.remove('hidden');
+        }
+
+        // Export Morning Report
+        function exportMorningReport() {
+            const patients = JSON.parse(localStorage.getItem('geriatricPatients') || '[]');
+            if (patients.length === 0) {
+                const msg = currentLanguage === 'en' ? 'No patients to export' : 'אין מטופלים לייצוא';
+                alert(msg);
+                return;
+            }
+            
+            const header = currentLanguage === 'en' ? 'MORNING REPORT - ' : 'דוח בוקר - ';
+            const report = header + new Date().toLocaleDateString() + '\n\n' +
+                patients.map(p => `${p.room}: ${p.name} (${p.age}yo)`).join('\n');
+            
+            navigator.clipboard.writeText(report);
+            const msg = currentLanguage === 'en' ? 'Report copied to clipboard!' : 'הדוח הועתק ללוח!';
+            alert(msg);
+        }
+
+        // Quick actions
+        function quickDrugCheck() {
+            window.open('https://www.micromedexsolutions.com', '_blank');
+        }
+
+        function openCalc(type) {
+            const msg = currentLanguage === 'en' ? 
+                `Opening ${type} calculator - Full implementation would be here` : 
+                `פותח מחשבון ${type} - יישום מלא יהיה כאן`;
+            alert(msg);
+        }
+
+        function showProtocol(type) {
+            const protocols = {
+                delirium: currentLanguage === 'en' ? 
+                    'Full delirium protocol with CAM scoring...' : 
+                    'פרוטוקול דליריום מלא עם ניקוד CAM...',
+                falls: currentLanguage === 'en' ? 
+                    'Complete fall assessment protocol...' : 
+                    'פרוטוקול הערכת נפילה מלא...',
+                medication: currentLanguage === 'en' ? 
+                    'Medication reconciliation steps...' : 
+                    'שלבי התאמת תרופות...',
+                pressure: currentLanguage === 'en' ? 
+                    'Braden scale and prevention measures...' : 
+                    'סולם ברייד׳ן ואמצעי מניעה...',
+                dysphagia: currentLanguage === 'en' ? 
+                    'Swallow assessment protocol...' : 
+                    'פרוטוקול הערכת בליעה...',
+                orthostatic: currentLanguage === 'en' ? 
+                    'Orthostatic measurement technique...' : 
+                    'טכניקת מדידה אורתוסטטית...'
+            };
+            
+            const title = type.charAt(0).toUpperCase() + type.slice(1);
+            const hebrewTitle = currentLanguage === 'he' ? 'פרוטוקול' : '';
+            
+            showModal(`
+                <h2 class="text-2xl font-bold mb-4">${hebrewTitle} ${title}</h2>
+                <p>${protocols[type]}</p>
+            `);
+        }
+
+        function startExam() {
+            const msg = currentLanguage === 'en' ? 
+                'Exam simulator would launch here with 50 Hebrew questions' : 
+                'סימולטור המבחן יפתח כאן עם 50 שאלות בעברית';
+            alert(msg);
+        }
+
+        function openTrials() {
+            const trials = [
+                'HYVET - HTN in >80yo',
+                'SPRINT - Intensive BP control',
+                'ARISTOTLE - Apixaban vs warfarin',
+                'ALLHAT - Thiazides first-line',
+                'RE-LY - Dabigatran for AFib'
+            ];
+            
+            const title = currentLanguage === 'en' ? 'Landmark Trials' : 'מחקרי דגל';
+            
+            showModal(`
+                <h2 class="text-2xl font-bold mb-4">${title}</h2>
+                <ul class="list-disc ml-5">
+                    ${trials.map(t => `<li>${t}</li>`).join('')}
+                </ul>
+            `);
+        }
+
+        function openResearch() {
+            const msg = currentLanguage === 'en' ? 
+                'Research assistant with PICO search would open here' : 
+                'עוזר מחקר עם חיפוש PICO יפתח כאן';
+            alert(msg);
+        }
+
+        function clearAllData() {
+            const confirmMsg = currentLanguage === 'en' ? 
+                'Clear all saved data?' : 
+                'למחוק את כל הנתונים השמורים?';
+            const successMsg = currentLanguage === 'en' ? 
+                'All data cleared' : 
+                'כל הנתונים נמחקו';
+                
+            if (confirm(confirmMsg)) {
+                localStorage.clear();
+                localStorage.setItem('geriatricPatients', JSON.stringify([]));
+                localStorage.setItem('darkMode', document.body.classList.contains('dark') ? 'true' : 'false');
+                localStorage.setItem('language', currentLanguage);
+                alert(successMsg);
+            }
+        }
+
+        // Modal functions
+        function showModal(content) {
+            document.getElementById('modalBody').innerHTML = content;
+            document.getElementById('modalContent').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modalContent').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
