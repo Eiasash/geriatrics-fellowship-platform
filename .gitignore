@@ -1,2 +1,5 @@
 # Local Netlify folder
 .netlify
+
+# Enhanced platform files (to prevent accidental commits)
+enhanced*.html
