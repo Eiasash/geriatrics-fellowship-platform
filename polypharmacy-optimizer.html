@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polypharmacy Optimizer - Geriatrics Fellowship</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .medication-card {
+            transition: all 0.3s ease;
+        }
+        .medication-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .beers-flag { border-left: 4px solid #dc2626; }
+        .deprescribe-flag { border-left: 4px solid #f59e0b; }
+        .monitor-flag { border-left: 4px solid #3b82f6; }
+        .safe-flag { border-left: 4px solid #10b981; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto p-6">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">💊 Polypharmacy Optimizer</h1>
+                <p class="text-gray-600">Deprescribing tool for geriatric patients with multiple medications</p>
+            </div>
+            <button onclick="window.location.href='index.html'" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
+                🏠 Home
+            </button>
+        </header>
+
+        <!-- Patient Information -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">👤 Patient Information</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Age</label>
+                    <input type="number" id="patientAge" class="w-full p-2 border border-gray-300 rounded" placeholder="75">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
+                    <input type="number" id="patientWeight" class="w-full p-2 border border-gray-300 rounded" placeholder="70">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Creatinine (mg/dL)</label>
+                    <input type="number" id="creatinine" step="0.1" class="w-full p-2 border border-gray-300 rounded" placeholder="1.2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Number of Medications</label>
+                    <input type="number" id="medCount" class="w-full p-2 border border-gray-300 rounded" placeholder="8" readonly>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medication Input -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">📝 Current Medications</h2>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Add Medication</label>
+                <div class="flex gap-2">
+                    <input type="text" id="medicationInput" placeholder="Enter medication name..." 
+                        class="flex-1 p-2 border border-gray-300 rounded-lg">
+                    <input type="text" id="doseInput" placeholder="Dose" 
+                        class="w-32 p-2 border border-gray-300 rounded-lg">
+                    <input type="text" id="frequencyInput" placeholder="Frequency" 
+                        class="w-32 p-2 border border-gray-300 rounded-lg">
+                    <button onclick="addMedication()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                        + Add
+                    </button>
+                </div>
+            </div>
+            <div id="medicationList" class="space-y-3">
+                <!-- Medications will be added here -->
+            </div>
+            <div class="mt-4 flex gap-3">
+                <button onclick="loadSampleMedications()" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
+                    📋 Load Sample
+                </button>
+                <button onclick="analyzePolypharmacy()" class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600">
+                    🔍 Analyze
+                </button>
+                <button onclick="clearAll()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                    🗑️ Clear All
+                </button>
+            </div>
+        </div>
+
+        <!-- Analysis Results -->
+        <div id="analysisResults" class="hidden">
+            <!-- Polypharmacy Risk Assessment -->
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4">⚠️ Polypharmacy Risk Assessment</h2>
+                <div id="riskAssessment" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Risk assessment will be populated here -->
+                </div>
+            </div>
+
+            <!-- Medication Analysis -->
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4">🔍 Medication Analysis</h2>
+                <div id="medicationAnalysis" class="space-y-4">
+                    <!-- Analysis will be populated here -->
+                </div>
+            </div>
+
+            <!-- Deprescribing Recommendations -->
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4">💡 Deprescribing Recommendations</h2>
+                <div id="deprescribingRecommendations" class="space-y-4">
+                    <!-- Recommendations will be populated here -->
+                </div>
+            </div>
+
+            <!-- Alternative Regimen -->
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4">🔄 Optimized Medication Regimen</h2>
+                <div id="optimizedRegimen" class="space-y-3">
+                    <!-- Optimized regimen will be populated here -->
+                </div>
+            </div>
+
+            <!-- Monitoring Plan -->
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4">📊 Monitoring Plan</h2>
+                <div id="monitoringPlan" class="space-y-3">
+                    <!-- Monitoring plan will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Reference -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold mb-4">📚 Deprescribing Guidelines</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold mb-3 text-red-600">🚫 High Priority for Deprescribing</h3>
+                    <ul class="text-sm space-y-2">
+                        <li>• <strong>Benzodiazepines:</strong> Fall risk, cognitive decline</li>
+                        <li>• <strong>Anticholinergics:</strong> Confusion, delirium</li>
+                        <li>• <strong>NSAIDs:</strong> GI bleeding, renal impairment</li>
+                        <li>• <strong>Muscle relaxants:</strong> Sedation, falls</li>
+                        <li>• <strong>First-gen antihistamines:</strong> Anticholinergic effects</li>
+                        <li>• <strong>Proton pump inhibitors:</strong> Long-term complications</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-3 text-green-600">✅ Safe Deprescribing Principles</h3>
+                    <ul class="text-sm space-y-2">
+                        <li>• <strong>One medication at a time</strong></li>
+                        <li>• <strong>Start with lowest risk medications</strong></li>
+                        <li>• <strong>Monitor for symptom recurrence</strong></li>
+                        <li>• <strong>Involve patient and family</strong></li>
+                        <li>• <strong>Document rationale</strong></li>
+                        <li>• <strong>Schedule follow-up</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let medications = [];
+        let analysisResults = {};
+
+        // Beers Criteria - medications to avoid in elderly
+        const beersCriteria = {
+            'diphenhydramine': { category: 'Antihistamine', reason: 'Anticholinergic effects', acb: 3 },
+            'meperidine': { category: 'Opioid', reason: 'Neurotoxicity', acb: 0 },
+            'diazepam': { category: 'Benzodiazepine', reason: 'Long half-life, falls', acb: 1 },
+            'lorazepam': { category: 'Benzodiazepine', reason: 'Falls, cognitive decline', acb: 1 },
+            'alprazolam': { category: 'Benzodiazepine', reason: 'High addiction risk', acb: 1 },
+            'temazepam': { category: 'Benzodiazepine', reason: 'Falls, cognitive decline', acb: 1 },
+            'zolpidem': { category: 'Z-drug', reason: 'Falls, delirium', acb: 1 },
+            'oxybutynin': { category: 'Anticholinergic', reason: 'Anticholinergic effects', acb: 3 },
+            'tolterodine': { category: 'Anticholinergic', reason: 'Anticholinergic effects', acb: 2 },
+            'cyclobenzaprine': { category: 'Muscle relaxant', reason: 'Anticholinergic effects', acb: 2 },
+            'carisoprodol': { category: 'Muscle relaxant', reason: 'Sedation, falls', acb: 1 },
+            'haloperidol': { category: 'Antipsychotic', reason: 'Extrapyramidal effects', acb: 1 },
+            'promethazine': { category: 'Antihistamine', reason: 'Anticholinergic effects', acb: 2 },
+            'hydroxyzine': { category: 'Antihistamine', reason: 'Anticholinergic effects', acb: 1 },
+            'ibuprofen': { category: 'NSAID', reason: 'GI bleeding, renal risk', acb: 0 },
+            'naproxen': { category: 'NSAID', reason: 'CV risk, GI bleeding', acb: 0 },
+            'digoxin': { category: 'Cardiac glycoside', reason: 'Toxicity if >0.125mg', acb: 0 },
+            'nitrofurantoin': { category: 'Antibiotic', reason: 'Pulmonary toxicity if CrCl<30', acb: 0 },
+            'ciprofloxacin': { category: 'Antibiotic', reason: 'Tendon rupture, delirium', acb: 0 }
+        };
+
+        // STOPP/START criteria
+        const stoppCriteria = {
+            'aspirin': { condition: 'Primary prevention without CVD', action: 'Consider stopping' },
+            'statin': { condition: 'Primary prevention >75yo', action: 'Consider stopping' },
+            'ppi': { condition: 'Long-term use without indication', action: 'Consider stopping' },
+            'antihistamine': { condition: 'Chronic use for sleep', action: 'Consider stopping' },
+            'muscle_relaxant': { condition: 'Chronic use', action: 'Consider stopping' },
+            'benzodiazepine': { condition: 'Chronic use >4 weeks', action: 'Consider stopping' }
+        };
+
+        function addMedication() {
+            const name = document.getElementById('medicationInput').value.trim();
+            const dose = document.getElementById('doseInput').value.trim();
+            const frequency = document.getElementById('frequencyInput').value.trim();
+
+            if (!name) {
+                alert('Please enter medication name');
+                return;
+            }
+
+            const medication = {
+                id: Date.now(),
+                name: name,
+                dose: dose,
+                frequency: frequency,
+                indication: '',
+                startDate: '',
+                lastReview: new Date().toISOString()
+            };
+
+            medications.push(medication);
+            updateMedicationList();
+            updateMedCount();
+            clearInputs();
+        }
+
+        function updateMedicationList() {
+            const container = document.getElementById('medicationList');
+            
+            if (medications.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-sm">No medications added yet</p>';
+                return;
+            }
+
+            container.innerHTML = medications.map(med => `
+                <div class="medication-card bg-gray-50 rounded-lg p-4 flex justify-between items-center">
+                    <div class="flex-1">
+                        <div class="font-semibold">${med.name}</div>
+                        <div class="text-sm text-gray-600">${med.dose} ${med.frequency}</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="editMedication(${med.id})" class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm hover:bg-blue-200">
+                            Edit
+                        </button>
+                        <button onclick="removeMedication(${med.id})" class="px-2 py-1 bg-red-100 text-red-700 rounded text-sm hover:bg-red-200">
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function removeMedication(id) {
+            medications = medications.filter(med => med.id !== id);
+            updateMedicationList();
+            updateMedCount();
+        }
+
+        function editMedication(id) {
+            const med = medications.find(m => m.id === id);
+            if (med) {
+                const newName = prompt('Edit medication name:', med.name);
+                const newDose = prompt('Edit dose:', med.dose);
+                const newFreq = prompt('Edit frequency:', med.frequency);
+                
+                if (newName) med.name = newName;
+                if (newDose) med.dose = newDose;
+                if (newFreq) med.frequency = newFreq;
+                
+                updateMedicationList();
+            }
+        }
+
+        function updateMedCount() {
+            document.getElementById('medCount').value = medications.length;
+        }
+
+        function clearInputs() {
+            document.getElementById('medicationInput').value = '';
+            document.getElementById('doseInput').value = '';
+            document.getElementById('frequencyInput').value = '';
+        }
+
+        function clearAll() {
+            medications = [];
+            updateMedicationList();
+            updateMedCount();
+            document.getElementById('analysisResults').classList.add('hidden');
+        }
+
+        function loadSampleMedications() {
+            medications = [
+                { id: 1, name: 'Warfarin', dose: '5mg', frequency: 'daily', indication: 'Atrial fibrillation', startDate: '2023-01-15', lastReview: '2024-01-15' },
+                { id: 2, name: 'Metoprolol', dose: '50mg', frequency: 'BID', indication: 'Hypertension', startDate: '2023-02-01', lastReview: '2024-01-15' },
+                { id: 3, name: 'Lisinopril', dose: '10mg', frequency: 'daily', indication: 'Hypertension', startDate: '2023-02-01', lastReview: '2024-01-15' },
+                { id: 4, name: 'Atorvastatin', dose: '20mg', frequency: 'daily', indication: 'Hyperlipidemia', startDate: '2023-03-01', lastReview: '2024-01-15' },
+                { id: 5, name: 'Metformin', dose: '1000mg', frequency: 'BID', indication: 'Diabetes', startDate: '2023-04-01', lastReview: '2024-01-15' },
+                { id: 6, name: 'Omeprazole', dose: '20mg', frequency: 'daily', indication: 'GERD', startDate: '2023-05-01', lastReview: '2024-01-15' },
+                { id: 7, name: 'Diphenhydramine', dose: '25mg', frequency: 'HS', indication: 'Sleep aid', startDate: '2023-06-01', lastReview: '2024-01-15' },
+                { id: 8, name: 'Lorazepam', dose: '0.5mg', frequency: 'PRN', indication: 'Anxiety', startDate: '2023-07-01', lastReview: '2024-01-15' }
+            ];
+            updateMedicationList();
+            updateMedCount();
+        }
+
+        function analyzePolypharmacy() {
+            if (medications.length === 0) {
+                alert('Please add medications first');
+                return;
+            }
+
+            analysisResults = {
+                totalMeds: medications.length,
+                beersViolations: [],
+                stoppViolations: [],
+                anticholinergicBurden: 0,
+                riskScore: 0,
+                recommendations: []
+            };
+
+            // Check Beers Criteria
+            medications.forEach(med => {
+                const medName = med.name.toLowerCase();
+                Object.keys(beersCriteria).forEach(beersMed => {
+                    if (medName.includes(beersMed)) {
+                        analysisResults.beersViolations.push({
+                            medication: med.name,
+                            ...beersCriteria[beersMed]
+                        });
+                        analysisResults.anticholinergicBurden += beersCriteria[beersMed].acb;
+                    }
+                });
+            });
+
+            // Check STOPP/START criteria
+            medications.forEach(med => {
+                const medName = med.name.toLowerCase();
+                if (medName.includes('aspirin') && !med.indication.includes('CVD')) {
+                    analysisResults.stoppViolations.push({
+                        medication: med.name,
+                        condition: 'Primary prevention without CVD',
+                        action: 'Consider stopping'
+                    });
+                }
+                if (medName.includes('statin') && !med.indication.includes('CVD')) {
+                    analysisResults.stoppViolations.push({
+                        medication: med.name,
+                        condition: 'Primary prevention',
+                        action: 'Consider stopping'
+                    });
+                }
+                if (medName.includes('omeprazole') || medName.includes('pantoprazole')) {
+                    analysisResults.stoppViolations.push({
+                        medication: med.name,
+                        condition: 'Long-term use without clear indication',
+                        action: 'Consider stopping'
+                    });
+                }
+            });
+
+            // Calculate risk score
+            analysisResults.riskScore = medications.length * 2;
+            analysisResults.riskScore += analysisResults.beersViolations.length * 5;
+            analysisResults.riskScore += analysisResults.stoppViolations.length * 3;
+            analysisResults.riskScore += Math.floor(analysisResults.anticholinergicBurden / 3) * 2;
+
+            // Generate recommendations
+            generateRecommendations();
+
+            displayAnalysisResults();
+            document.getElementById('analysisResults').classList.remove('hidden');
+        }
+
+        function generateRecommendations() {
+            const recommendations = [];
+
+            // High priority deprescribing
+            analysisResults.beersViolations.forEach(violation => {
+                recommendations.push({
+                    priority: 'High',
+                    medication: violation.medication,
+                    reason: violation.reason,
+                    action: 'Consider deprescribing',
+                    monitoring: 'Monitor for symptom recurrence'
+                });
+            });
+
+            // Medium priority deprescribing
+            analysisResults.stoppViolations.forEach(violation => {
+                recommendations.push({
+                    priority: 'Medium',
+                    medication: violation.medication,
+                    reason: violation.condition,
+                    action: violation.action,
+                    monitoring: 'Monitor clinical status'
+                });
+            });
+
+            // General recommendations
+            if (medications.length > 10) {
+                recommendations.push({
+                    priority: 'High',
+                    medication: 'Multiple medications',
+                    reason: 'Polypharmacy (>10 medications)',
+                    action: 'Comprehensive medication review',
+                    monitoring: 'Regular follow-up'
+                });
+            }
+
+            if (analysisResults.anticholinergicBurden > 3) {
+                recommendations.push({
+                    priority: 'High',
+                    medication: 'Anticholinergic burden',
+                    reason: `High anticholinergic burden (${analysisResults.anticholinergicBurden})`,
+                    action: 'Reduce anticholinergic medications',
+                    monitoring: 'Monitor cognitive function'
+                });
+            }
+
+            analysisResults.recommendations = recommendations;
+        }
+
+        function displayAnalysisResults() {
+            // Risk Assessment
+            const riskContainer = document.getElementById('riskAssessment');
+            const riskLevel = analysisResults.riskScore > 20 ? 'High' : analysisResults.riskScore > 10 ? 'Medium' : 'Low';
+            const riskColor = riskLevel === 'High' ? 'red' : riskLevel === 'Medium' ? 'yellow' : 'green';
+
+            riskContainer.innerHTML = `
+                <div class="bg-${riskColor}-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-${riskColor}-900">Overall Risk Level</h3>
+                    <div class="text-2xl font-bold text-${riskColor}-600">${riskLevel}</div>
+                    <div class="text-sm text-${riskColor}-700">Score: ${analysisResults.riskScore}</div>
+                </div>
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-blue-900">Total Medications</h3>
+                    <div class="text-2xl font-bold text-blue-600">${analysisResults.totalMeds}</div>
+                    <div class="text-sm text-blue-700">${analysisResults.totalMeds > 10 ? 'High polypharmacy' : analysisResults.totalMeds > 5 ? 'Moderate polypharmacy' : 'Low polypharmacy'}</div>
+                </div>
+                <div class="bg-orange-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-orange-900">Anticholinergic Burden</h3>
+                    <div class="text-2xl font-bold text-orange-600">${analysisResults.anticholinergicBurden}</div>
+                    <div class="text-sm text-orange-700">${analysisResults.anticholinergicBurden > 3 ? 'High risk' : analysisResults.anticholinergicBurden > 1 ? 'Moderate risk' : 'Low risk'}</div>
+                </div>
+            `;
+
+            // Medication Analysis
+            const analysisContainer = document.getElementById('medicationAnalysis');
+            let analysisHTML = '';
+
+            if (analysisResults.beersViolations.length > 0) {
+                analysisHTML += `
+                    <div class="beers-flag bg-red-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-red-900 mb-2">🚫 Beers Criteria Violations</h3>
+                        ${analysisResults.beersViolations.map(violation => `
+                            <div class="mb-2">
+                                <strong>${violation.medication}</strong> (${violation.category})
+                                <div class="text-sm text-red-700">${violation.reason} - ACB Score: ${violation.acb}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            if (analysisResults.stoppViolations.length > 0) {
+                analysisHTML += `
+                    <div class="deprescribe-flag bg-yellow-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-yellow-900 mb-2">⚠️ STOPP/START Violations</h3>
+                        ${analysisResults.stoppViolations.map(violation => `
+                            <div class="mb-2">
+                                <strong>${violation.medication}</strong>
+                                <div class="text-sm text-yellow-700">${violation.condition} - ${violation.action}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            if (analysisResults.beersViolations.length === 0 && analysisResults.stoppViolations.length === 0) {
+                analysisHTML += `
+                    <div class="safe-flag bg-green-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-green-900 mb-2">✅ No Major Issues Found</h3>
+                        <p class="text-green-700">Current medication regimen appears appropriate for geriatric patient.</p>
+                    </div>
+                `;
+            }
+
+            analysisContainer.innerHTML = analysisHTML;
+
+            // Deprescribing Recommendations
+            const recommendationsContainer = document.getElementById('deprescribingRecommendations');
+            recommendationsContainer.innerHTML = analysisResults.recommendations.map(rec => `
+                <div class="medication-card bg-white border rounded-lg p-4 ${getPriorityClass(rec.priority)}">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <h4 class="font-semibold">${rec.medication}</h4>
+                            <p class="text-sm text-gray-600 mt-1">${rec.reason}</p>
+                            <p class="text-sm text-blue-600 mt-2">💡 ${rec.action}</p>
+                            <p class="text-xs text-gray-500 mt-1">📊 ${rec.monitoring}</p>
+                        </div>
+                        <span class="px-2 py-1 rounded-full text-xs font-medium ${getPriorityBadgeClass(rec.priority)}">
+                            ${rec.priority}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Optimized Regimen
+            const optimizedContainer = document.getElementById('optimizedRegimen');
+            const optimizedMeds = medications.filter(med => {
+                const medName = med.name.toLowerCase();
+                return !Object.keys(beersCriteria).some(beersMed => medName.includes(beersMed));
+            });
+
+            optimizedContainer.innerHTML = `
+                <div class="mb-4">
+                    <h3 class="font-semibold text-lg">Optimized Medication List (${optimizedMeds.length} medications)</h3>
+                    <p class="text-sm text-gray-600">Medications to continue after deprescribing</p>
+                </div>
+                ${optimizedMeds.map(med => `
+                    <div class="safe-flag bg-green-50 rounded-lg p-3">
+                        <div class="font-semibold">${med.name}</div>
+                        <div class="text-sm text-gray-600">${med.dose} ${med.frequency}</div>
+                        <div class="text-xs text-green-600">✓ Safe to continue</div>
+                    </div>
+                `).join('')}
+            `;
+
+            // Monitoring Plan
+            const monitoringContainer = document.getElementById('monitoringPlan');
+            const monitoringItems = [
+                'Regular medication review every 3-6 months',
+                'Monitor for adverse drug reactions',
+                'Assess medication adherence',
+                'Review drug-drug interactions',
+                'Evaluate clinical outcomes',
+                'Consider pharmacist consultation'
+            ];
+
+            monitoringContainer.innerHTML = monitoringItems.map(item => `
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span class="text-sm">${item}</span>
+                </div>
+            `).join('');
+        }
+
+        function getPriorityClass(priority) {
+            switch (priority) {
+                case 'High': return 'beers-flag';
+                case 'Medium': return 'deprescribe-flag';
+                case 'Low': return 'monitor-flag';
+                default: return 'safe-flag';
+            }
+        }
+
+        function getPriorityBadgeClass(priority) {
+            switch (priority) {
+                case 'High': return 'bg-red-100 text-red-800';
+                case 'Medium': return 'bg-yellow-100 text-yellow-800';
+                case 'Low': return 'bg-blue-100 text-blue-800';
+                default: return 'bg-green-100 text-green-800';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capacity Assessment Tool - Geriatrics Fellowship</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .assessment-card {
+            transition: all 0.3s ease;
+        }
+        .assessment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .capacity-high { border-left: 4px solid #10b981; }
+        .capacity-moderate { border-left: 4px solid #f59e0b; }
+        .capacity-low { border-left: 4px solid #ef4444; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto p-6">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">⚖️ Capacity Assessment Tool</h1>
+                <p class="text-gray-600">Decision-making capacity evaluation for geriatric patients</p>
+            </div>
+            <button onclick="window.location.href='index.html'" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
+                🏠 Home
+            </button>
+        </header>
+
+        <!-- Patient Information -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">👤 Patient Information</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Patient Name/ID</label>
+                    <input type="text" id="patientName" class="w-full p-2 border border-gray-300 rounded" placeholder="Patient ID">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Age</label>
+                    <input type="number" id="patientAge" class="w-full p-2 border border-gray-300 rounded" placeholder="75">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Date of Assessment</label>
+                    <input type="date" id="assessmentDate" class="w-full p-2 border border-gray-300 rounded">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Assessor</label>
+                    <input type="text" id="assessor" class="w-full p-2 border border-gray-300 rounded" placeholder="Dr. Name">
+                </div>
+            </div>
+        </div>
+
+        <!-- Assessment Domains -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Understanding -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-bold mb-4">🧠 Understanding</h3>
+                <p class="text-sm text-gray-600 mb-4">Can the patient understand the information provided?</p>
+                
+                <div class="space-y-3">
+                    <label class="flex items-center">
+                        <input type="radio" name="understanding" value="4" class="mr-3">
+                        <span class="text-sm">Fully understands all aspects of the decision</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="understanding" value="3" class="mr-3">
+                        <span class="text-sm">Understands most aspects with minor clarification</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="understanding" value="2" class="mr-3">
+                        <span class="text-sm">Understands basic information with significant help</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="understanding" value="1" class="mr-3">
+                        <span class="text-sm">Limited understanding despite explanation</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="understanding" value="0" class="mr-3">
+                        <span class="text-sm">No understanding of the information</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Appreciation -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-bold mb-4">💭 Appreciation</h3>
+                <p class="text-sm text-gray-600 mb-4">Can the patient appreciate the significance of the decision?</p>
+                
+                <div class="space-y-3">
+                    <label class="flex items-center">
+                        <input type="radio" name="appreciation" value="4" class="mr-3">
+                        <span class="text-sm">Fully appreciates personal relevance and consequences</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="appreciation" value="3" class="mr-3">
+                        <span class="text-sm">Appreciates most aspects with minor clarification</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="appreciation" value="2" class="mr-3">
+                        <span class="text-sm">Partial appreciation with significant help</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="appreciation" value="1" class="mr-3">
+                        <span class="text-sm">Limited appreciation despite explanation</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="appreciation" value="0" class="mr-3">
+                        <span class="text-sm">No appreciation of personal relevance</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Reasoning -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-bold mb-4">🤔 Reasoning</h3>
+                <p class="text-sm text-gray-600 mb-4">Can the patient reason through the decision logically?</p>
+                
+                <div class="space-y-3">
+                    <label class="flex items-center">
+                        <input type="radio" name="reasoning" value="4" class="mr-3">
+                        <span class="text-sm">Clear, logical reasoning process</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="reasoning" value="3" class="mr-3">
+                        <span class="text-sm">Mostly logical with minor inconsistencies</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="reasoning" value="2" class="mr-3">
+                        <span class="text-sm">Some logical reasoning with significant gaps</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="reasoning" value="1" class="mr-3">
+                        <span class="text-sm">Limited logical reasoning</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="reasoning" value="0" class="mr-3">
+                        <span class="text-sm">No logical reasoning process</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Expression -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-bold mb-4">🗣️ Expression of Choice</h3>
+                <p class="text-sm text-gray-600 mb-4">Can the patient communicate their choice clearly?</p>
+                
+                <div class="space-y-3">
+                    <label class="flex items-center">
+                        <input type="radio" name="expression" value="4" class="mr-3">
+                        <span class="text-sm">Clear, consistent expression of choice</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="expression" value="3" class="mr-3">
+                        <span class="text-sm">Mostly clear with minor inconsistencies</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="expression" value="2" class="mr-3">
+                        <span class="text-sm">Some clarity with significant confusion</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="expression" value="1" class="mr-3">
+                        <span class="text-sm">Limited ability to express choice</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="expression" value="0" class="mr-3">
+                        <span class="text-sm">Unable to express choice</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Factors -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">🔍 Additional Factors</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold mb-3">Cognitive Assessment</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="delirium" class="mr-3">
+                            <span class="text-sm">Delirium present</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="dementia" class="mr-3">
+                            <span class="text-sm">Dementia diagnosis</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="depression" class="mr-3">
+                            <span class="text-sm">Depression affecting judgment</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="medications" class="mr-3">
+                            <span class="text-sm">Medications affecting cognition</span>
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-3">Environmental Factors</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="stress" class="mr-3">
+                            <span class="text-sm">High stress situation</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="family" class="mr-3">
+                            <span class="text-sm">Family pressure present</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="time" class="mr-3">
+                            <span class="text-sm">Adequate time for decision</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="support" class="mr-3">
+                            <span class="text-sm">Support person available</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assessment Actions -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">📋 Assessment Actions</h2>
+            <div class="flex gap-3">
+                <button onclick="calculateCapacity()" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                    🔍 Calculate Capacity Score
+                </button>
+                <button onclick="generateReport()" class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
+                    📄 Generate Report
+                </button>
+                <button onclick="clearAssessment()" class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                    🗑️ Clear
+                </button>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="resultsSection" class="hidden">
+            <!-- Capacity Score -->
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4">📊 Capacity Assessment Results</h2>
+                <div id="capacityResults" class="space-y-4">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4">💡 Recommendations</h2>
+                <div id="recommendations" class="space-y-3">
+                    <!-- Recommendations will be populated here -->
+                </div>
+            </div>
+
+            <!-- Legal Considerations -->
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4">⚖️ Legal Considerations</h2>
+                <div id="legalConsiderations" class="space-y-3">
+                    <!-- Legal considerations will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Reference -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold mb-4">📚 Capacity Assessment Guidelines</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold mb-3 text-green-600">✅ Capacity Present (16-20 points)</h3>
+                    <ul class="text-sm space-y-1">
+                        <li>• Patient can make informed decisions</li>
+                        <li>• Document assessment findings</li>
+                        <li>• Respect patient autonomy</li>
+                        <li>• Continue with patient's choice</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-3 text-red-600">❌ Capacity Lacking (0-11 points)</h3>
+                    <ul class="text-sm space-y-1">
+                        <li>• Consider substitute decision maker</li>
+                        <li>• Document incapacity clearly</li>
+                        <li>• Follow legal procedures</li>
+                        <li>• Reassess when appropriate</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateCapacity() {
+            // Get scores from radio buttons
+            const understanding = parseInt(document.querySelector('input[name="understanding"]:checked')?.value || 0);
+            const appreciation = parseInt(document.querySelector('input[name="appreciation"]:checked')?.value || 0);
+            const reasoning = parseInt(document.querySelector('input[name="reasoning"]:checked')?.value || 0);
+            const expression = parseInt(document.querySelector('input[name="expression"]:checked')?.value || 0);
+
+            const totalScore = understanding + appreciation + reasoning + expression;
+            
+            // Get additional factors
+            const delirium = document.getElementById('delirium').checked;
+            const dementia = document.getElementById('dementia').checked;
+            const depression = document.getElementById('depression').checked;
+            const medications = document.getElementById('medications').checked;
+            const stress = document.getElementById('stress').checked;
+            const family = document.getElementById('family').checked;
+            const time = document.getElementById('time').checked;
+            const support = document.getElementById('support').checked;
+
+            // Calculate capacity level
+            let capacityLevel = '';
+            let capacityColor = '';
+            let capacityDescription = '';
+
+            if (totalScore >= 16) {
+                capacityLevel = 'High Capacity';
+                capacityColor = 'green';
+                capacityDescription = 'Patient has decision-making capacity';
+            } else if (totalScore >= 12) {
+                capacityLevel = 'Moderate Capacity';
+                capacityColor = 'yellow';
+                capacityDescription = 'Patient has limited capacity - consider support';
+            } else {
+                capacityLevel = 'Low Capacity';
+                capacityColor = 'red';
+                capacityDescription = 'Patient lacks decision-making capacity';
+            }
+
+            // Display results
+            const resultsContainer = document.getElementById('capacityResults');
+            resultsContainer.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-${capacityColor}-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-${capacityColor}-900">Overall Score</h3>
+                        <div class="text-3xl font-bold text-${capacityColor}-600">${totalScore}/20</div>
+                        <div class="text-sm text-${capacityColor}-700">${capacityLevel}</div>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-blue-900">Understanding</h3>
+                        <div class="text-2xl font-bold text-blue-600">${understanding}/4</div>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-purple-900">Appreciation</h3>
+                        <div class="text-2xl font-bold text-purple-600">${appreciation}/4</div>
+                    </div>
+                    <div class="bg-orange-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-orange-900">Reasoning</h3>
+                        <div class="text-2xl font-bold text-orange-600">${reasoning}/4</div>
+                    </div>
+                </div>
+                <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                    <h4 class="font-semibold mb-2">Assessment Summary</h4>
+                    <p class="text-sm text-gray-700">${capacityDescription}</p>
+                </div>
+            `;
+
+            // Generate recommendations
+            generateRecommendations(totalScore, capacityLevel, {
+                delirium, dementia, depression, medications, stress, family, time, support
+            });
+
+            document.getElementById('resultsSection').classList.remove('hidden');
+        }
+
+        function generateRecommendations(score, level, factors) {
+            const recommendations = [];
+            const legalConsiderations = [];
+
+            if (score >= 16) {
+                recommendations.push({
+                    type: 'success',
+                    title: 'Capacity Present',
+                    items: [
+                        'Respect patient autonomy and choice',
+                        'Document assessment findings clearly',
+                        'Ensure patient understands all options',
+                        'Continue with patient-directed care'
+                    ]
+                });
+            } else if (score >= 12) {
+                recommendations.push({
+                    type: 'warning',
+                    title: 'Limited Capacity',
+                    items: [
+                        'Consider involving family/support person',
+                        'Provide additional time for decision',
+                        'Simplify information presentation',
+                        'Consider reassessment after interventions'
+                    ]
+                });
+            } else {
+                recommendations.push({
+                    type: 'danger',
+                    title: 'Capacity Lacking',
+                    items: [
+                        'Identify substitute decision maker',
+                        'Follow legal procedures for incapacity',
+                        'Document incapacity clearly',
+                        'Consider guardianship if appropriate'
+                    ]
+                });
+            }
+
+            // Factor-specific recommendations
+            if (factors.delirium) {
+                recommendations.push({
+                    type: 'info',
+                    title: 'Delirium Present',
+                    items: [
+                        'Address underlying cause of delirium',
+                        'Reassess capacity after delirium resolves',
+                        'Consider temporary substitute decision maker'
+                    ]
+                });
+            }
+
+            if (factors.dementia) {
+                recommendations.push({
+                    type: 'info',
+                    title: 'Dementia Diagnosis',
+                    items: [
+                        'Assess capacity for specific decisions',
+                        'Consider advance directives',
+                        'Involve family in decision-making process'
+                    ]
+                });
+            }
+
+            if (factors.depression) {
+                recommendations.push({
+                    type: 'info',
+                    title: 'Depression Affecting Judgment',
+                    items: [
+                        'Treat depression before reassessing',
+                        'Consider temporary substitute decision maker',
+                        'Monitor for improvement with treatment'
+                    ]
+                });
+            }
+
+            // Legal considerations
+            if (score < 12) {
+                legalConsiderations.push(
+                    'Document incapacity assessment in medical record',
+                    'Notify appropriate legal authorities if required',
+                    'Consider advance directives or living will',
+                    'Follow institutional policies for incapacity'
+                );
+            } else {
+                legalConsiderations.push(
+                    'Document capacity assessment in medical record',
+                    'Ensure patient understands legal implications',
+                    'Consider advance care planning',
+                    'Respect patient autonomy and choice'
+                );
+            }
+
+            // Display recommendations
+            const recommendationsContainer = document.getElementById('recommendations');
+            recommendationsContainer.innerHTML = recommendations.map(rec => `
+                <div class="assessment-card bg-white border rounded-lg p-4 ${getRecommendationClass(rec.type)}">
+                    <h4 class="font-semibold mb-2">${rec.title}</h4>
+                    <ul class="text-sm space-y-1">
+                        ${rec.items.map(item => `<li>• ${item}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+
+            // Display legal considerations
+            const legalContainer = document.getElementById('legalConsiderations');
+            legalContainer.innerHTML = legalConsiderations.map(item => `
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span class="text-sm">${item}</span>
+                </div>
+            `).join('');
+        }
+
+        function getRecommendationClass(type) {
+            switch (type) {
+                case 'success': return 'capacity-high';
+                case 'warning': return 'capacity-moderate';
+                case 'danger': return 'capacity-low';
+                case 'info': return 'capacity-moderate';
+                default: return '';
+            }
+        }
+
+        function generateReport() {
+            const patientName = document.getElementById('patientName').value || 'Patient';
+            const patientAge = document.getElementById('patientAge').value || 'Unknown';
+            const assessmentDate = document.getElementById('assessmentDate').value || new Date().toISOString().split('T')[0];
+            const assessor = document.getElementById('assessor').value || 'Assessor';
+
+            const understanding = parseInt(document.querySelector('input[name="understanding"]:checked')?.value || 0);
+            const appreciation = parseInt(document.querySelector('input[name="appreciation"]:checked')?.value || 0);
+            const reasoning = parseInt(document.querySelector('input[name="reasoning"]:checked')?.value || 0);
+            const expression = parseInt(document.querySelector('input[name="expression"]:checked')?.value || 0);
+            const totalScore = understanding + appreciation + reasoning + expression;
+
+            let capacityLevel = '';
+            if (totalScore >= 16) capacityLevel = 'High Capacity';
+            else if (totalScore >= 12) capacityLevel = 'Moderate Capacity';
+            else capacityLevel = 'Low Capacity';
+
+            const report = `CAPACITY ASSESSMENT REPORT
+Generated: ${new Date().toLocaleDateString()}
+
+PATIENT INFORMATION:
+Name/ID: ${patientName}
+Age: ${patientAge}
+Assessment Date: ${assessmentDate}
+Assessor: ${assessor}
+
+ASSESSMENT SCORES:
+Understanding: ${understanding}/4
+Appreciation: ${appreciation}/4
+Reasoning: ${reasoning}/4
+Expression: ${expression}/4
+Total Score: ${totalScore}/20
+
+CAPACITY DETERMINATION:
+Level: ${capacityLevel}
+Recommendation: ${totalScore >= 16 ? 'Patient has decision-making capacity' : totalScore >= 12 ? 'Limited capacity - consider support' : 'Patient lacks decision-making capacity'}
+
+ADDITIONAL FACTORS:
+${document.getElementById('delirium').checked ? '• Delirium present\n' : ''}${document.getElementById('dementia').checked ? '• Dementia diagnosis\n' : ''}${document.getElementById('depression').checked ? '• Depression affecting judgment\n' : ''}${document.getElementById('medications').checked ? '• Medications affecting cognition\n' : ''}${document.getElementById('stress').checked ? '• High stress situation\n' : ''}${document.getElementById('family').checked ? '• Family pressure present\n' : ''}${document.getElementById('time').checked ? '• Adequate time for decision\n' : ''}${document.getElementById('support').checked ? '• Support person available\n' : ''}
+
+This assessment should be documented in the patient's medical record and reviewed as clinically appropriate.
+
+Generated by Geriatrics Fellowship Platform`;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(report).then(() => {
+                    alert('Capacity assessment report copied to clipboard!');
+                });
+            } else {
+                const textArea = document.createElement('textarea');
+                textArea.value = report;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('Capacity assessment report copied to clipboard!');
+            }
+        }
+
+        function clearAssessment() {
+            // Clear radio buttons
+            document.querySelectorAll('input[type="radio"]').forEach(radio => radio.checked = false);
+            
+            // Clear checkboxes
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = false);
+            
+            // Clear text inputs
+            document.getElementById('patientName').value = '';
+            document.getElementById('patientAge').value = '';
+            document.getElementById('assessmentDate').value = '';
+            document.getElementById('assessor').value = '';
+            
+            // Hide results
+            document.getElementById('resultsSection').classList.add('hidden');
+        }
+
+        // Set default date to today
+        document.getElementById('assessmentDate').value = new Date().toISOString().split('T')[0];
+    </script>
+</body>
+</html>
