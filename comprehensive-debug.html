@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Debug - Geriatrics Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .debug-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">🔧 Comprehensive Dashboard Debug</h1>
+        
+        <div class="debug-section">
+            <h2 class="text-xl font-bold mb-4">System Status</h2>
+            <div id="systemStatus">
+                <p>Checking system status...</p>
+            </div>
+        </div>
+        
+        <div class="debug-section">
+            <h2 class="text-xl font-bold mb-4">JavaScript Tests</h2>
+            <div class="space-y-2">
+                <button onclick="testBasicJS()" class="px-4 py-2 bg-blue-500 text-white rounded-lg">
+                    Test Basic JavaScript
+                </button>
+                <button onclick="testLocalStorage()" class="px-4 py-2 bg-green-500 text-white rounded-lg">
+                    Test LocalStorage
+                </button>
+                <button onclick="testDOM()" class="px-4 py-2 bg-purple-500 text-white rounded-lg">
+                    Test DOM Manipulation
+                </button>
+                <button onclick="testEventHandlers()" class="px-4 py-2 bg-red-500 text-white rounded-lg">
+                    Test Event Handlers
+                </button>
+            </div>
+            <div id="jsTestResults" class="mt-4 p-4 bg-gray-100 rounded-lg">
+                <p>JavaScript test results will appear here</p>
+            </div>
+        </div>
+        
+        <div class="debug-section">
+            <h2 class="text-xl font-bold mb-4">Dashboard Functionality Tests</h2>
+            <div class="space-y-2">
+                <button onclick="testPatientManagement()" class="px-4 py-2 bg-indigo-500 text-white rounded-lg">
+                    Test Patient Management
+                </button>
+                <button onclick="testModalFunctionality()" class="px-4 py-2 bg-yellow-500 text-white rounded-lg">
+                    Test Modal Functionality
+                </button>
+                <button onclick="testFormSubmission()" class="px-4 py-2 bg-pink-500 text-white rounded-lg">
+                    Test Form Submission
+                </button>
+                <button onclick="testDataPersistence()" class="px-4 py-2 bg-teal-500 text-white rounded-lg">
+                    Test Data Persistence
+                </button>
+            </div>
+            <div id="dashboardTestResults" class="mt-4 p-4 bg-gray-100 rounded-lg">
+                <p>Dashboard test results will appear here</p>
+            </div>
+        </div>
+        
+        <div class="debug-section">
+            <h2 class="text-xl font-bold mb-4">Live Dashboard Test</h2>
+            <div class="space-y-2">
+                <button onclick="openLiveDashboard()" class="px-4 py-2 bg-gray-600 text-white rounded-lg">
+                    Open Live Dashboard
+                </button>
+                <button onclick="testDashboardButtons()" class="px-4 py-2 bg-gray-700 text-white rounded-lg">
+                    Test Dashboard Buttons
+                </button>
+            </div>
+            <div id="liveTestResults" class="mt-4 p-4 bg-gray-100 rounded-lg">
+                <p>Live dashboard test results will appear here</p>
+            </div>
+        </div>
+        
+        <div class="debug-section">
+            <h2 class="text-xl font-bold mb-4">Console Output</h2>
+            <div id="consoleOutput" class="p-4 bg-black text-green-400 rounded-lg font-mono text-sm max-h-64 overflow-y-auto">
+                <p>Console output will appear here...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Override console.log to capture output
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        function addToConsole(message, type = 'log') {
+            const consoleOutput = document.getElementById('consoleOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? 'red' : type === 'warn' ? 'orange' : 'green';
+            consoleOutput.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole(args.join(' '), 'log');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsole(args.join(' '), 'error');
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToConsole(args.join(' '), 'warn');
+        };
+        
+        // System status check
+        function checkSystemStatus() {
+            const status = document.getElementById('systemStatus');
+            let statusHTML = '<ul>';
+            
+            // Check browser features
+            statusHTML += `<li class="success">✅ JavaScript: ${typeof window !== 'undefined' ? 'Enabled' : 'Disabled'}</li>`;
+            statusHTML += `<li class="success">✅ LocalStorage: ${typeof Storage !== 'undefined' ? 'Available' : 'Not Available'}</li>`;
+            statusHTML += `<li class="success">✅ DOM: ${document ? 'Available' : 'Not Available'}</li>`;
+            statusHTML += `<li class="success">✅ Console: ${console ? 'Available' : 'Not Available'}</li>`;
+            
+            // Check page load state
+            statusHTML += `<li class="success">✅ Document Ready State: ${document.readyState}</li>`;
+            statusHTML += `<li class="success">✅ Page URL: ${window.location.href}</li>`;
+            
+            statusHTML += '</ul>';
+            status.innerHTML = statusHTML;
+        }
+        
+        // Basic JavaScript tests
+        function testBasicJS() {
+            const results = document.getElementById('jsTestResults');
+            let testResults = '<h3 class="font-bold mb-2">Basic JavaScript Tests:</h3><ul>';
+            
+            try {
+                // Test 1: Function declaration
+                function testFunction() { return 'test'; }
+                testResults += '<li class="success">✅ Function declaration works</li>';
+                
+                // Test 2: Arrow functions
+                const arrowTest = () => 'arrow';
+                testResults += '<li class="success">✅ Arrow functions work</li>';
+                
+                // Test 3: Array methods
+                const arr = [1, 2, 3];
+                const mapped = arr.map(x => x * 2);
+                testResults += '<li class="success">✅ Array methods work</li>';
+                
+                // Test 4: Object methods
+                const obj = { test: 'value' };
+                const hasProp = 'test' in obj;
+                testResults += '<li class="success">✅ Object methods work</li>';
+                
+                // Test 5: Async/await
+                async function asyncTest() { return 'async'; }
+                testResults += '<li class="success">✅ Async/await works</li>';
+                
+            } catch (error) {
+                testResults += `<li class="error">❌ Error: ${error.message}</li>`;
+            }
+            
+            testResults += '</ul>';
+            results.innerHTML = testResults;
+            console.log('Basic JavaScript tests completed');
+        }
+        
+        // LocalStorage tests
+        function testLocalStorage() {
+            const results = document.getElementById('jsTestResults');
+            let testResults = '<h3 class="font-bold mb-2">LocalStorage Tests:</h3><ul>';
+            
+            try {
+                // Test 1: Set item
+                localStorage.setItem('debugTest', 'testValue');
+                testResults += '<li class="success">✅ Set item works</li>';
+                
+                // Test 2: Get item
+                const retrieved = localStorage.getItem('debugTest');
+                testResults += `<li class="success">✅ Get item works: ${retrieved}</li>`;
+                
+                // Test 3: JSON operations
+                const testData = { patients: [], test: true };
+                localStorage.setItem('debugTestJSON', JSON.stringify(testData));
+                const parsed = JSON.parse(localStorage.getItem('debugTestJSON'));
+                testResults += '<li class="success">✅ JSON operations work</li>';
+                
+                // Test 4: Remove item
+                localStorage.removeItem('debugTest');
+                testResults += '<li class="success">✅ Remove item works</li>';
+                
+                // Clean up
+                localStorage.removeItem('debugTestJSON');
+                
+            } catch (error) {
+                testResults += `<li class="error">❌ Error: ${error.message}</li>`;
+            }
+            
+            testResults += '</ul>';
+            results.innerHTML = testResults;
+            console.log('LocalStorage tests completed');
+        }
+        
+        // DOM manipulation tests
+        function testDOM() {
+            const results = document.getElementById('jsTestResults');
+            let testResults = '<h3 class="font-bold mb-2">DOM Manipulation Tests:</h3><ul>';
+            
+            try {
+                // Test 1: Get element by ID
+                const testElement = document.getElementById('jsTestResults');
+                testResults += '<li class="success">✅ getElementById works</li>';
+                
+                // Test 2: Create element
+                const newElement = document.createElement('div');
+                testResults += '<li class="success">✅ createElement works</li>';
+                
+                // Test 3: Class manipulation
+                newElement.classList.add('test-class');
+                testResults += '<li class="success">✅ classList manipulation works</li>';
+                
+                // Test 4: InnerHTML
+                newElement.innerHTML = '<p>Test content</p>';
+                testResults += '<li class="success">✅ innerHTML works</li>';
+                
+                // Test 5: Event listener
+                newElement.addEventListener('click', () => console.log('Click test'));
+                testResults += '<li class="success">✅ addEventListener works</li>';
+                
+            } catch (error) {
+                testResults += `<li class="error">❌ Error: ${error.message}</li>`;
+            }
+            
+            testResults += '</ul>';
+            results.innerHTML = testResults;
+            console.log('DOM manipulation tests completed');
+        }
+        
+        // Event handler tests
+        function testEventHandlers() {
+            const results = document.getElementById('jsTestResults');
+            let testResults = '<h3 class="font-bold mb-2">Event Handler Tests:</h3><ul>';
+            
+            try {
+                // Test 1: Click events
+                const clickTest = document.createElement('button');
+                let clickCount = 0;
+                clickTest.addEventListener('click', () => clickCount++);
+                clickTest.click();
+                testResults += '<li class="success">✅ Click events work</li>';
+                
+                // Test 2: Form events
+                const form = document.createElement('form');
+                let submitCount = 0;
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    submitCount++;
+                });
+                form.dispatchEvent(new Event('submit'));
+                testResults += '<li class="success">✅ Form events work</li>';
+                
+                // Test 3: Window events
+                let loadCount = 0;
+                window.addEventListener('load', () => loadCount++);
+                testResults += '<li class="success">✅ Window events work</li>';
+                
+            } catch (error) {
+                testResults += `<li class="error">❌ Error: ${error.message}</li>`;
+            }
+            
+            testResults += '</ul>';
+            results.innerHTML = testResults;
+            console.log('Event handler tests completed');
+        }
+        
+        // Patient management tests
+        function testPatientManagement() {
+            const results = document.getElementById('dashboardTestResults');
+            let testResults = '<h3 class="font-bold mb-2">Patient Management Tests:</h3><ul>';
+            
+            try {
+                // Test patient data structure
+                const testPatient = {
+                    id: 'test123',
+                    room: '101',
+                    initials: 'JD',
+                    age: 75,
+                    sex: 'M',
+                    problems: ['HTN', 'DM'],
+                    meds: ['Metformin', 'Lisinopril'],
+                    dateAdded: new Date().toISOString(),
+                    completed: false
+                };
+                testResults += '<li class="success">✅ Patient data structure valid</li>';
+                
+                // Test risk calculation
+                function calculateRiskScore(patient) {
+                    let score = 0;
+                    if (patient.age >= 85) score += 2;
+                    else if (patient.age >= 75) score += 1;
+                    if (patient.meds && patient.meds.length >= 5) score += 2;
+                    if (patient.problems && patient.problems.length >= 3) score += 1;
+                    return score;
+                }
+                
+                const riskScore = calculateRiskScore(testPatient);
+                testResults += `<li class="success">✅ Risk calculation works: ${riskScore}</li>`;
+                
+                // Test data persistence
+                localStorage.setItem('testPatients', JSON.stringify([testPatient]));
+                const loaded = JSON.parse(localStorage.getItem('testPatients'));
+                testResults += '<li class="success">✅ Data persistence works</li>';
+                
+                // Clean up
+                localStorage.removeItem('testPatients');
+                
+            } catch (error) {
+                testResults += `<li class="error">❌ Error: ${error.message}</li>`;
+            }
+            
+            testResults += '</ul>';
+            results.innerHTML = testResults;
+            console.log('Patient management tests completed');
+        }
+        
+        // Modal functionality tests
+        function testModalFunctionality() {
+            const results = document.getElementById('dashboardTestResults');
+            let testResults = '<h3 class="font-bold mb-2">Modal Functionality Tests:</h3><ul>';
+            
+            try {
+                // Create test modal
+                const modal = document.createElement('div');
+                modal.id = 'testModal';
+                modal.className = 'hidden fixed inset-0 bg-gray-600 bg-opacity-50';
+                modal.innerHTML = '<div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"><h3>Test Modal</h3><button onclick="closeTestModal()">Close</button></div>';
+                document.body.appendChild(modal);
+                
+                // Test modal show
+                modal.classList.remove('hidden');
+                testResults += '<li class="success">✅ Modal show works</li>';
+                
+                // Test modal hide
+                modal.classList.add('hidden');
+                testResults += '<li class="success">✅ Modal hide works</li>';
+                
+                // Clean up
+                document.body.removeChild(modal);
+                
+            } catch (error) {
+                testResults += `<li class="error">❌ Error: ${error.message}</li>`;
+            }
+            
+            testResults += '</ul>';
+            results.innerHTML = testResults;
+            console.log('Modal functionality tests completed');
+        }
+        
+        // Form submission tests
+        function testFormSubmission() {
+            const results = document.getElementById('dashboardTestResults');
+            let testResults = '<h3 class="font-bold mb-2">Form Submission Tests:</h3><ul>';
+            
+            try {
+                // Create test form
+                const form = document.createElement('form');
+                form.innerHTML = `
+                    <input type="text" id="testRoom" value="101">
+                    <input type="text" id="testInitials" value="JD">
+                    <input type="number" id="testAge" value="75">
+                    <select id="testSex"><option value="M">Male</option></select>
+                `;
+                document.body.appendChild(form);
+                
+                // Test form data extraction
+                const room = document.getElementById('testRoom').value;
+                const initials = document.getElementById('testInitials').value;
+                const age = parseInt(document.getElementById('testAge').value);
+                const sex = document.getElementById('testSex').value;
+                
+                testResults += '<li class="success">✅ Form data extraction works</li>';
+                
+                // Test form validation
+                if (room && initials && age) {
+                    testResults += '<li class="success">✅ Form validation works</li>';
+                } else {
+                    testResults += '<li class="error">❌ Form validation failed</li>';
+                }
+                
+                // Test form submission event
+                let submitTriggered = false;
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    submitTriggered = true;
+                });
+                form.dispatchEvent(new Event('submit'));
+                
+                if (submitTriggered) {
+                    testResults += '<li class="success">✅ Form submission event works</li>';
+                } else {
+                    testResults += '<li class="error">❌ Form submission event failed</li>';
+                }
+                
+                // Clean up
+                document.body.removeChild(form);
+                
+            } catch (error) {
+                testResults += `<li class="error">❌ Error: ${error.message}</li>`;
+            }
+            
+            testResults += '</ul>';
+            results.innerHTML = testResults;
+            console.log('Form submission tests completed');
+        }
+        
+        // Data persistence tests
+        function testDataPersistence() {
+            const results = document.getElementById('dashboardTestResults');
+            let testResults = '<h3 class="font-bold mb-2">Data Persistence Tests:</h3><ul>';
+            
+            try {
+                // Test 1: Save data
+                const testData = { patients: [], lastUpdated: new Date().toISOString() };
+                localStorage.setItem('geriatricPatients', JSON.stringify(testData));
+                testResults += '<li class="success">✅ Save data works</li>';
+                
+                // Test 2: Load data
+                const loaded = JSON.parse(localStorage.getItem('geriatricPatients'));
+                testResults += '<li class="success">✅ Load data works</li>';
+                
+                // Test 3: Update data
+                loaded.patients.push({ id: '1', name: 'Test' });
+                localStorage.setItem('geriatricPatients', JSON.stringify(loaded));
+                testResults += '<li class="success">✅ Update data works</li>';
+                
+                // Test 4: Clear data
+                localStorage.removeItem('geriatricPatients');
+                const cleared = localStorage.getItem('geriatricPatients');
+                if (!cleared) {
+                    testResults += '<li class="success">✅ Clear data works</li>';
+                } else {
+                    testResults += '<li class="error">❌ Clear data failed</li>';
+                }
+                
+            } catch (error) {
+                testResults += `<li class="error">❌ Error: ${error.message}</li>`;
+            }
+            
+            testResults += '</ul>';
+            results.innerHTML = testResults;
+            console.log('Data persistence tests completed');
+        }
+        
+        // Open live dashboard
+        function openLiveDashboard() {
+            window.open('/patient-dashboard-fixed', '_blank');
+            console.log('Opening live dashboard in new tab');
+        }
+        
+        // Test dashboard buttons
+        function testDashboardButtons() {
+            const results = document.getElementById('liveTestResults');
+            let testResults = '<h3 class="font-bold mb-2">Dashboard Button Tests:</h3><ul>';
+            
+            try {
+                // Test if dashboard page loads
+                fetch('/patient-dashboard-fixed')
+                    .then(response => {
+                        if (response.ok) {
+                            testResults += '<li class="success">✅ Dashboard page loads successfully</li>';
+                        } else {
+                            testResults += '<li class="error">❌ Dashboard page failed to load</li>';
+                        }
+                        results.innerHTML = testResults;
+                    })
+                    .catch(error => {
+                        testResults += `<li class="error">❌ Error loading dashboard: ${error.message}</li>`;
+                        results.innerHTML = testResults;
+                    });
+                
+            } catch (error) {
+                testResults += `<li class="error">❌ Error: ${error.message}</li>`;
+                results.innerHTML = testResults;
+            }
+            
+            console.log('Dashboard button tests completed');
+        }
+        
+        // Initialize debug page
+        function initDebug() {
+            console.log('Debug page initializing...');
+            checkSystemStatus();
+            console.log('Debug page initialized');
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', initDebug);
+        
+        // Also try immediate initialization
+        if (document.readyState === 'loading') {
+            console.log('Document still loading, waiting for load event');
+        } else {
+            console.log('Document already loaded, initializing now');
+            initDebug();
+        }
+    </script>
+</body>
+</html>

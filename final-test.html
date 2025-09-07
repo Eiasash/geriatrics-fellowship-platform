@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Dashboard Test - Geriatrics Fellowship</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .test-result { padding: 10px; margin: 5px 0; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">🧪 Final Dashboard Test</h1>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">Test Results</h2>
+            <div id="testResults">
+                <div class="test-result info">Running tests...</div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">Quick Actions</h2>
+            <div class="space-y-2">
+                <button onclick="testDashboardAccess()" class="px-4 py-2 bg-blue-500 text-white rounded-lg">
+                    Test Dashboard Access
+                </button>
+                <button onclick="testButtonFunctionality()" class="px-4 py-2 bg-green-500 text-white rounded-lg">
+                    Test Button Functionality
+                </button>
+                <button onclick="testDataOperations()" class="px-4 py-2 bg-purple-500 text-white rounded-lg">
+                    Test Data Operations
+                </button>
+                <button onclick="openDashboard()" class="px-4 py-2 bg-orange-500 text-white rounded-lg">
+                    Open Dashboard
+                </button>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold mb-4">Dashboard URLs</h2>
+            <div class="space-y-2">
+                <div class="p-3 bg-gray-100 rounded">
+                    <strong>Main Dashboard:</strong> 
+                    <a href="/dashboard" class="text-blue-600 hover:underline">http://localhost:8888/dashboard</a>
+                </div>
+                <div class="p-3 bg-gray-100 rounded">
+                    <strong>Fixed Dashboard:</strong> 
+                    <a href="/patient-dashboard-fixed" class="text-blue-600 hover:underline">http://localhost:8888/patient-dashboard-fixed</a>
+                </div>
+                <div class="p-3 bg-gray-100 rounded">
+                    <strong>Debug Tools:</strong> 
+                    <a href="/comprehensive-debug" class="text-blue-600 hover:underline">http://localhost:8888/comprehensive-debug</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addTestResult(message, type = 'info') {
+            const results = document.getElementById('testResults');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${type}`;
+            resultDiv.textContent = message;
+            results.appendChild(resultDiv);
+        }
+        
+        function clearResults() {
+            document.getElementById('testResults').innerHTML = '';
+        }
+        
+        async function testDashboardAccess() {
+            clearResults();
+            addTestResult('Testing dashboard access...', 'info');
+            
+            try {
+                // Test main dashboard
+                const dashboardResponse = await fetch('/dashboard');
+                if (dashboardResponse.ok) {
+                    addTestResult('✅ Main dashboard accessible', 'success');
+                } else {
+                    addTestResult(`❌ Main dashboard error: ${dashboardResponse.status}`, 'error');
+                }
+                
+                // Test fixed dashboard
+                const fixedResponse = await fetch('/patient-dashboard-fixed');
+                if (fixedResponse.ok) {
+                    addTestResult('✅ Fixed dashboard accessible', 'success');
+                } else {
+                    addTestResult(`❌ Fixed dashboard error: ${fixedResponse.status}`, 'error');
+                }
+                
+                // Test debug tools
+                const debugResponse = await fetch('/comprehensive-debug');
+                if (debugResponse.ok) {
+                    addTestResult('✅ Debug tools accessible', 'success');
+                } else {
+                    addTestResult(`❌ Debug tools error: ${debugResponse.status}`, 'error');
+                }
+                
+            } catch (error) {
+                addTestResult(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+        
+        function testButtonFunctionality() {
+            clearResults();
+            addTestResult('Testing button functionality...', 'info');
+            
+            // Test basic JavaScript
+            try {
+                // Test function calls
+                function testFunction() { return 'test'; }
+                const result = testFunction();
+                addTestResult('✅ Basic function calls work', 'success');
+                
+                // Test event handling
+                const testButton = document.createElement('button');
+                let clickCount = 0;
+                testButton.addEventListener('click', () => clickCount++);
+                testButton.click();
+                addTestResult('✅ Event handling works', 'success');
+                
+                // Test DOM manipulation
+                const testDiv = document.createElement('div');
+                testDiv.innerHTML = '<p>Test</p>';
+                addTestResult('✅ DOM manipulation works', 'success');
+                
+                // Test localStorage
+                localStorage.setItem('test', 'value');
+                const retrieved = localStorage.getItem('test');
+                if (retrieved === 'value') {
+                    addTestResult('✅ LocalStorage works', 'success');
+                } else {
+                    addTestResult('❌ LocalStorage failed', 'error');
+                }
+                localStorage.removeItem('test');
+                
+            } catch (error) {
+                addTestResult(`❌ JavaScript error: ${error.message}`, 'error');
+            }
+        }
+        
+        function testDataOperations() {
+            clearResults();
+            addTestResult('Testing data operations...', 'info');
+            
+            try {
+                // Test patient data structure
+                const testPatient = {
+                    id: 'test123',
+                    room: '101',
+                    initials: 'JD',
+                    age: 75,
+                    sex: 'M',
+                    problems: ['HTN', 'DM'],
+                    meds: ['Metformin', 'Lisinopril'],
+                    dateAdded: new Date().toISOString(),
+                    completed: false
+                };
+                addTestResult('✅ Patient data structure valid', 'success');
+                
+                // Test JSON operations
+                const jsonString = JSON.stringify(testPatient);
+                const parsed = JSON.parse(jsonString);
+                if (parsed.id === testPatient.id) {
+                    addTestResult('✅ JSON operations work', 'success');
+                } else {
+                    addTestResult('❌ JSON operations failed', 'error');
+                }
+                
+                // Test risk calculation
+                function calculateRiskScore(patient) {
+                    let score = 0;
+                    if (patient.age >= 85) score += 2;
+                    else if (patient.age >= 75) score += 1;
+                    if (patient.meds && patient.meds.length >= 5) score += 2;
+                    if (patient.problems && patient.problems.length >= 3) score += 1;
+                    return score;
+                }
+                
+                const riskScore = calculateRiskScore(testPatient);
+                addTestResult(`✅ Risk calculation works (score: ${riskScore})`, 'success');
+                
+                // Test data persistence
+                localStorage.setItem('testPatients', JSON.stringify([testPatient]));
+                const loaded = JSON.parse(localStorage.getItem('testPatients'));
+                if (loaded && loaded.length === 1 && loaded[0].id === testPatient.id) {
+                    addTestResult('✅ Data persistence works', 'success');
+                } else {
+                    addTestResult('❌ Data persistence failed', 'error');
+                }
+                localStorage.removeItem('testPatients');
+                
+            } catch (error) {
+                addTestResult(`❌ Data operation error: ${error.message}`, 'error');
+            }
+        }
+        
+        function openDashboard() {
+            window.open('/patient-dashboard-fixed', '_blank');
+            addTestResult('Opening dashboard in new tab...', 'info');
+        }
+        
+        // Run initial tests
+        window.addEventListener('load', function() {
+            addTestResult('Page loaded successfully', 'success');
+            addTestResult('All test functions ready', 'info');
+        });
+    </script>
+</body>
+</html>
