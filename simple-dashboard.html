@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Dashboard - Geriatrics Fellowship</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto p-6">
+        <header class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Simple Patient Dashboard</h1>
+                <p class="text-gray-600">Morning Rounds - Shaare Zedek Geriatrics</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="addNewPatient()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                    ➕ Add Patient
+                </button>
+                <button onclick="exportReport()" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
+                    📤 Export Report
+                </button>
+                <button onclick="window.location.href='index.html'" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
+                    🏠 Home
+                </button>
+            </div>
+        </header>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="text-2xl font-bold text-blue-600" id="totalPatients">0</div>
+                <div class="text-sm text-gray-600">Total Patients</div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="text-2xl font-bold text-red-600" id="highRisk">0</div>
+                <div class="text-sm text-gray-600">High Risk</div>
+            </div>
+        </div>
+
+        <!-- Patient List -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-semibold">Active Patients</h2>
+            </div>
+            <div id="patientList" class="p-6">
+                <div class="text-center py-8 text-gray-500">
+                    <div class="text-4xl mb-4">🏥</div>
+                    <p>No patients added yet</p>
+                    <button onclick="addNewPatient()" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                        Add Your First Patient
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Patient Modal -->
+        <div id="addPatientModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+                <div class="mt-3">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Patient</h3>
+                    <form id="addPatientForm">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Room Number</label>
+                                <input type="text" id="room" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Initials</label>
+                                <input type="text" id="initials" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Age</label>
+                                <input type="number" id="age" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Sex</label>
+                                <select id="sex" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="M">Male</option>
+                                    <option value="F">Female</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex justify-end gap-3 mt-6">
+                            <button type="button" onclick="closeAddPatientModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
+                                Cancel
+                            </button>
+                            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                                Add Patient
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Patient data management
+        let patients = [];
+        
+        function loadPatients() {
+            try {
+                const stored = localStorage.getItem('geriatricPatients');
+                patients = stored ? JSON.parse(stored) : [];
+                console.log('Loaded patients:', patients);
+            } catch (error) {
+                console.error('Error loading patients:', error);
+                patients = [];
+            }
+        }
+        
+        function savePatients() {
+            try {
+                localStorage.setItem('geriatricPatients', JSON.stringify(patients));
+                console.log('Saved patients:', patients);
+            } catch (error) {
+                console.error('Error saving patients:', error);
+                alert('Error saving patient data. Please try again.');
+            }
+        }
+
+        function init() {
+            console.log('Initializing dashboard...');
+            loadPatients();
+            renderPatients();
+            updateStats();
+            
+            // Add form handler
+            const form = document.getElementById('addPatientForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    addPatient();
+                });
+                console.log('Form handler added');
+            } else {
+                console.error('Form not found!');
+            }
+            console.log('Dashboard initialized');
+        }
+
+        function renderPatients() {
+            const patientList = document.getElementById('patientList');
+            
+            if (patients.length === 0) {
+                patientList.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-4">🏥</div>
+                        <p>No patients added yet</p>
+                        <button onclick="addNewPatient()" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                            Add Your First Patient
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            patientList.innerHTML = patients.map(patient => `
+                <div class="bg-gray-50 rounded-lg p-4 mb-4" onclick="editPatient('${patient.id}')">
+                    <h3 class="font-bold text-lg">Room ${patient.room} - ${patient.initials}</h3>
+                    <p class="text-gray-600">${patient.age}yo ${patient.sex === 'M' ? 'Male' : 'Female'}</p>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('totalPatients').textContent = patients.length;
+            document.getElementById('highRisk').textContent = patients.filter(p => p.age >= 85).length;
+        }
+
+        function addNewPatient() {
+            console.log('Add new patient clicked');
+            document.getElementById('addPatientModal').classList.remove('hidden');
+        }
+
+        function closeAddPatientModal() {
+            console.log('Close modal clicked');
+            document.getElementById('addPatientModal').classList.add('hidden');
+            document.getElementById('addPatientForm').reset();
+        }
+
+        function addPatient() {
+            console.log('Add patient form submitted');
+            try {
+                const room = document.getElementById('room').value.trim();
+                const initials = document.getElementById('initials').value.trim();
+                const age = parseInt(document.getElementById('age').value);
+                const sex = document.getElementById('sex').value;
+                
+                if (!room || !initials || !age) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+
+                const newPatient = {
+                    id: Date.now().toString(),
+                    room: room,
+                    initials: initials,
+                    age: age,
+                    sex: sex,
+                    dateAdded: new Date().toISOString()
+                };
+
+                patients.push(newPatient);
+                savePatients();
+                
+                closeAddPatientModal();
+                renderPatients();
+                updateStats();
+                
+                alert(`Patient ${newPatient.initials} added successfully!`);
+            } catch (error) {
+                console.error('Error adding patient:', error);
+                alert('Error adding patient. Please try again.');
+            }
+        }
+
+        function editPatient(patientId) {
+            console.log('Edit patient clicked:', patientId);
+            alert('Edit functionality - Patient ID: ' + patientId);
+        }
+
+        function exportReport() {
+            console.log('Export report clicked');
+            if (patients.length === 0) {
+                alert('No patients to export. Add patients first.');
+                return;
+            }
+            
+            let report = `MORNING REPORT - Shaare Zedek Geriatrics\n${new Date().toLocaleDateString()}\n\n`;
+            patients.forEach(p => {
+                report += `Room ${p.room}: ${p.initials} (${p.age}yo ${p.sex})\n`;
+            });
+            
+            alert('Report:\n' + report);
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', init);
+        
+        // Also try immediate initialization
+        console.log('Script loaded, trying immediate init...');
+        if (document.readyState === 'loading') {
+            console.log('Document still loading, waiting for load event');
+        } else {
+            console.log('Document already loaded, initializing now');
+            init();
+        }
+    </script>
+</body>
+</html>

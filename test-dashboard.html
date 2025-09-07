@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Dashboard - Geriatrics Fellowship</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">Test Dashboard</h1>
+        
+        <div class="space-y-4">
+            <button onclick="testFunction()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                Test Button 1
+            </button>
+            
+            <button onclick="alert('Direct alert test')" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
+                Test Button 2 (Direct Alert)
+            </button>
+            
+            <button id="testButton3" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                Test Button 3 (Event Listener)
+            </button>
+        </div>
+        
+        <div id="output" class="mt-6 p-4 bg-gray-100 rounded-lg">
+            <p>Click buttons to test functionality</p>
+        </div>
+    </div>
+
+    <script>
+        function testFunction() {
+            document.getElementById('output').innerHTML = '<p class="text-green-600">✅ Test Button 1 clicked successfully!</p>';
+            console.log('Test function executed');
+        }
+        
+        // Test event listener
+        document.getElementById('testButton3').addEventListener('click', function() {
+            document.getElementById('output').innerHTML = '<p class="text-blue-600">✅ Test Button 3 clicked via event listener!</p>';
+            console.log('Event listener executed');
+        });
+        
+        // Test if page loads
+        window.addEventListener('load', function() {
+            console.log('Page loaded successfully');
+            document.getElementById('output').innerHTML += '<p class="text-purple-600">✅ Page loaded, JavaScript is working!</p>';
+        });
+    </script>
+</body>
+</html>

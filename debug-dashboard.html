@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Dashboard - Geriatrics Fellowship</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">Debug Dashboard</h1>
+        
+        <div class="space-y-4">
+            <button onclick="testAlert()" class="px-4 py-2 bg-blue-500 text-white rounded-lg">
+                Test Alert
+            </button>
+            
+            <button onclick="testModal()" class="px-4 py-2 bg-green-500 text-white rounded-lg">
+                Test Modal
+            </button>
+            
+            <button onclick="testForm()" class="px-4 py-2 bg-red-500 text-white rounded-lg">
+                Test Form
+            </button>
+        </div>
+        
+        <div id="output" class="mt-6 p-4 bg-gray-100 rounded-lg">
+            <p>Debug output will appear here</p>
+        </div>
+        
+        <!-- Test Modal -->
+        <div id="testModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                <h3 class="text-lg font-semibold mb-4">Test Modal</h3>
+                <p>This is a test modal</p>
+                <button onclick="closeModal()" class="mt-4 px-4 py-2 bg-gray-300 text-gray-700 rounded-md">
+                    Close
+                </button>
+            </div>
+        </div>
+        
+        <!-- Test Form -->
+        <form id="testForm" class="mt-6 p-4 bg-white rounded-lg">
+            <h3 class="text-lg font-semibold mb-4">Test Form</h3>
+            <input type="text" id="testInput" placeholder="Enter something" class="w-full p-2 border rounded mb-4">
+            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md">
+                Submit
+            </button>
+        </form>
+    </div>
+
+    <script>
+        console.log('Script starting...');
+        
+        function testAlert() {
+            console.log('testAlert called');
+            alert('Alert test successful!');
+            document.getElementById('output').innerHTML = '<p class="text-green-600">✅ Alert test successful!</p>';
+        }
+        
+        function testModal() {
+            console.log('testModal called');
+            document.getElementById('testModal').classList.remove('hidden');
+            document.getElementById('output').innerHTML = '<p class="text-blue-600">✅ Modal opened!</p>';
+        }
+        
+        function closeModal() {
+            console.log('closeModal called');
+            document.getElementById('testModal').classList.add('hidden');
+            document.getElementById('output').innerHTML = '<p class="text-purple-600">✅ Modal closed!</p>';
+        }
+        
+        function testForm() {
+            console.log('testForm called');
+            const input = document.getElementById('testInput');
+            const value = input.value;
+            document.getElementById('output').innerHTML = `<p class="text-orange-600">✅ Form test - Input value: "${value}"</p>`;
+        }
+        
+        // Form submit handler
+        document.getElementById('testForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('Form submitted');
+            testForm();
+        });
+        
+        // Page load handler
+        window.addEventListener('load', function() {
+            console.log('Page loaded successfully');
+            document.getElementById('output').innerHTML += '<p class="text-indigo-600">✅ Page loaded, all systems ready!</p>';
+        });
+        
+        console.log('Script loaded');
+    </script>
+</body>
+</html>
