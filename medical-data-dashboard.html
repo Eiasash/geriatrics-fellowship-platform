@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Data Dashboard - Geriatrics Fellowship</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .data-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .data-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .vital-trend {
+            height: 200px;
+        }
+        .alert-critical { border-left: 4px solid #dc2626; }
+        .alert-warning { border-left: 4px solid #f59e0b; }
+        .alert-normal { border-left: 4px solid #10b981; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto p-6">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">📊 Medical Data Dashboard</h1>
+                <p class="text-gray-600">Real-time Patient Monitoring & Analytics</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="refreshData()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                    🔄 Refresh Data
+                </button>
+                <button onclick="exportMedicalReport()" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
+                    📤 Export Report
+                </button>
+                <button onclick="window.location.href='index.html'" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
+                    🏠 Home
+                </button>
+            </div>
+        </header>
+
+        <!-- Real-time Alerts -->
+        <div class="mb-6">
+            <h2 class="text-xl font-bold mb-4 text-red-600">🚨 Critical Alerts</h2>
+            <div id="alertsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Alerts will be populated here -->
+            </div>
+        </div>
+
+        <!-- Key Metrics Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="data-card bg-white rounded-lg shadow p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-2xl font-bold text-blue-600" id="totalPatients">0</div>
+                        <div class="text-sm text-gray-600">Active Patients</div>
+                    </div>
+                    <div class="text-3xl">🏥</div>
+                </div>
+                <div class="mt-2 text-xs text-green-600" id="patientTrend">+0% from yesterday</div>
+            </div>
+
+            <div class="data-card bg-white rounded-lg shadow p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-2xl font-bold text-red-600" id="criticalPatients">0</div>
+                        <div class="text-sm text-gray-600">Critical Status</div>
+                    </div>
+                    <div class="text-3xl">⚠️</div>
+                </div>
+                <div class="mt-2 text-xs text-red-600" id="criticalTrend">+0% from yesterday</div>
+            </div>
+
+            <div class="data-card bg-white rounded-lg shadow p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-2xl font-bold text-yellow-600" id="avgLengthOfStay">0</div>
+                        <div class="text-sm text-gray-600">Avg. Length of Stay</div>
+                    </div>
+                    <div class="text-3xl">📅</div>
+                </div>
+                <div class="mt-2 text-xs text-blue-600" id="losTrend">days</div>
+            </div>
+
+            <div class="data-card bg-white rounded-lg shadow p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-2xl font-bold text-green-600" id="dischargeRate">0%</div>
+                        <div class="text-sm text-gray-600">Discharge Rate</div>
+                    </div>
+                    <div class="text-3xl">✅</div>
+                </div>
+                <div class="mt-2 text-xs text-green-600" id="dischargeTrend">+0% from yesterday</div>
+            </div>
+        </div>
+
+        <!-- Vital Signs Trends -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="data-card bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-bold mb-4">📈 Vital Signs Trends</h3>
+                <canvas id="vitalSignsChart" class="vital-trend"></canvas>
+            </div>
+
+            <div class="data-card bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-bold mb-4">💊 Medication Compliance</h3>
+                <canvas id="medicationChart" class="vital-trend"></canvas>
+            </div>
+        </div>
+
+        <!-- Patient Risk Distribution -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="data-card bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-bold mb-4">🎯 Risk Distribution</h3>
+                <canvas id="riskDistributionChart" class="vital-trend"></canvas>
+            </div>
+
+            <div class="data-card bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-bold mb-4">📊 Length of Stay Analysis</h3>
+                <canvas id="lengthOfStayChart" class="vital-trend"></canvas>
+            </div>
+        </div>
+
+        <!-- Detailed Patient List with Medical Data -->
+        <div class="data-card bg-white rounded-lg shadow">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-semibold">Detailed Patient Medical Data</h2>
+                <p class="text-gray-600">Comprehensive view of all patient medical information</p>
+            </div>
+            <div class="p-6">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vitals</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Labs</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Medications</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk Score</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Patient data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical Data Insights -->
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="data-card bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-bold mb-4">🔍 Clinical Insights</h3>
+                <div id="clinicalInsights" class="space-y-3">
+                    <!-- Insights will be populated here -->
+                </div>
+            </div>
+
+            <div class="data-card bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-bold mb-4">📋 Quality Metrics</h3>
+                <div id="qualityMetrics" class="space-y-3">
+                    <!-- Quality metrics will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Medical data management
+        let medicalData = {
+            patients: [],
+            vitals: [],
+            labs: [],
+            medications: [],
+            alerts: []
+        };
+
+        // Initialize dashboard
+        function init() {
+            loadMedicalData();
+            generateSampleData();
+            renderCharts();
+            updateDashboard();
+            setInterval(refreshData, 30000); // Refresh every 30 seconds
+        }
+
+        function loadMedicalData() {
+            try {
+                const stored = localStorage.getItem('medicalData');
+                if (stored) {
+                    medicalData = JSON.parse(stored);
+                }
+            } catch (error) {
+                console.error('Error loading medical data:', error);
+            }
+        }
+
+        function saveMedicalData() {
+            try {
+                localStorage.setItem('medicalData', JSON.stringify(medicalData));
+            } catch (error) {
+                console.error('Error saving medical data:', error);
+            }
+        }
+
+        function generateSampleData() {
+            if (medicalData.patients.length === 0) {
+                // Generate sample medical data
+                const samplePatients = [
+                    {
+                        id: '1',
+                        room: '101',
+                        initials: 'A.B.',
+                        age: 78,
+                        sex: 'F',
+                        diagnosis: ['Hypertension', 'Diabetes', 'Atrial Fibrillation'],
+                        vitals: {
+                            bp: '145/85',
+                            hr: 88,
+                            temp: 98.6,
+                            rr: 16,
+                            spo2: 96
+                        },
+                        labs: {
+                            glucose: 180,
+                            creatinine: 1.8,
+                            potassium: 4.2,
+                            sodium: 140,
+                            hb: 12.5,
+                            wbc: 8.2
+                        },
+                        medications: ['Metformin', 'Lisinopril', 'Warfarin', 'Atorvastatin'],
+                        riskScore: 7,
+                        status: 'Critical',
+                        lastUpdated: new Date().toISOString()
+                    },
+                    {
+                        id: '2',
+                        room: '102',
+                        initials: 'C.D.',
+                        age: 82,
+                        sex: 'M',
+                        diagnosis: ['Dementia', 'Parkinson\'s', 'Fall Risk'],
+                        vitals: {
+                            bp: '130/75',
+                            hr: 72,
+                            temp: 98.2,
+                            rr: 14,
+                            spo2: 98
+                        },
+                        labs: {
+                            glucose: 95,
+                            creatinine: 1.2,
+                            potassium: 4.0,
+                            sodium: 138,
+                            hb: 14.2,
+                            wbc: 6.8
+                        },
+                        medications: ['Donepezil', 'Levodopa', 'Vitamin D'],
+                        riskScore: 5,
+                        status: 'Moderate',
+                        lastUpdated: new Date().toISOString()
+                    },
+                    {
+                        id: '3',
+                        room: '103',
+                        initials: 'E.F.',
+                        age: 75,
+                        sex: 'F',
+                        diagnosis: ['Osteoporosis', 'Depression'],
+                        vitals: {
+                            bp: '120/70',
+                            hr: 65,
+                            temp: 98.4,
+                            rr: 12,
+                            spo2: 99
+                        },
+                        labs: {
+                            glucose: 110,
+                            creatinine: 0.9,
+                            potassium: 4.1,
+                            sodium: 142,
+                            hb: 13.8,
+                            wbc: 7.5
+                        },
+                        medications: ['Alendronate', 'Sertraline', 'Calcium'],
+                        riskScore: 2,
+                        status: 'Stable',
+                        lastUpdated: new Date().toISOString()
+                    }
+                ];
+
+                medicalData.patients = samplePatients;
+                medicalData.alerts = generateAlerts(samplePatients);
+                saveMedicalData();
+            }
+        }
+
+        function generateAlerts(patients) {
+            const alerts = [];
+            patients.forEach(patient => {
+                if (patient.vitals.bp && parseFloat(patient.vitals.bp.split('/')[0]) > 160) {
+                    alerts.push({
+                        id: `bp-${patient.id}`,
+                        patient: patient.initials,
+                        room: patient.room,
+                        type: 'Hypertension',
+                        severity: 'Critical',
+                        message: `Blood pressure ${patient.vitals.bp} - Immediate attention needed`,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+                if (patient.labs.glucose > 200) {
+                    alerts.push({
+                        id: `glucose-${patient.id}`,
+                        patient: patient.initials,
+                        room: patient.room,
+                        type: 'Hyperglycemia',
+                        severity: 'High',
+                        message: `Glucose ${patient.labs.glucose} mg/dL - Check insulin`,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+                if (patient.labs.creatinine > 2.0) {
+                    alerts.push({
+                        id: `creatinine-${patient.id}`,
+                        patient: patient.initials,
+                        room: patient.room,
+                        type: 'Renal Function',
+                        severity: 'High',
+                        message: `Creatinine ${patient.labs.creatinine} - Monitor kidney function`,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            });
+            return alerts;
+        }
+
+        function renderCharts() {
+            // Vital Signs Chart
+            const vitalCtx = document.getElementById('vitalSignsChart').getContext('2d');
+            new Chart(vitalCtx, {
+                type: 'line',
+                data: {
+                    labels: ['6AM', '9AM', '12PM', '3PM', '6PM', '9PM'],
+                    datasets: [{
+                        label: 'Systolic BP',
+                        data: [140, 145, 150, 148, 142, 138],
+                        borderColor: 'rgb(239, 68, 68)',
+                        tension: 0.1
+                    }, {
+                        label: 'Heart Rate',
+                        data: [75, 80, 85, 82, 78, 76],
+                        borderColor: 'rgb(59, 130, 246)',
+                        tension: 0.1
+                    }, {
+                        label: 'Temperature',
+                        data: [98.2, 98.4, 98.6, 98.5, 98.3, 98.1],
+                        borderColor: 'rgb(16, 185, 129)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+
+            // Medication Compliance Chart
+            const medCtx = document.getElementById('medicationChart').getContext('2d');
+            new Chart(medCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Compliant', 'Partial', 'Non-compliant'],
+                    datasets: [{
+                        data: [65, 25, 10],
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Risk Distribution Chart
+            const riskCtx = document.getElementById('riskDistributionChart').getContext('2d');
+            new Chart(riskCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Low Risk', 'Moderate Risk', 'High Risk', 'Critical'],
+                    datasets: [{
+                        label: 'Number of Patients',
+                        data: [8, 12, 6, 3],
+                        backgroundColor: ['#10b981', '#f59e0b', '#f97316', '#ef4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Length of Stay Chart
+            const losCtx = document.getElementById('lengthOfStayChart').getContext('2d');
+            new Chart(losCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Average Length of Stay (days)',
+                        data: [5.2, 4.8, 5.1, 4.9],
+                        borderColor: 'rgb(99, 102, 241)',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        tension: 0.1,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateDashboard() {
+            updateMetrics();
+            renderAlerts();
+            renderPatientTable();
+            renderInsights();
+        }
+
+        function updateMetrics() {
+            const patients = medicalData.patients;
+            const totalPatients = patients.length;
+            const criticalPatients = patients.filter(p => p.riskScore >= 7).length;
+            const avgLengthOfStay = 5.0; // This would be calculated from actual data
+            const dischargeRate = 85; // This would be calculated from actual data
+
+            document.getElementById('totalPatients').textContent = totalPatients;
+            document.getElementById('criticalPatients').textContent = criticalPatients;
+            document.getElementById('avgLengthOfStay').textContent = avgLengthOfStay;
+            document.getElementById('dischargeRate').textContent = dischargeRate + '%';
+
+            // Update trends (simulated)
+            document.getElementById('patientTrend').textContent = '+2% from yesterday';
+            document.getElementById('criticalTrend').textContent = criticalPatients > 0 ? '+1% from yesterday' : 'No change';
+            document.getElementById('losTrend').textContent = 'days';
+            document.getElementById('dischargeTrend').textContent = '+3% from yesterday';
+        }
+
+        function renderAlerts() {
+            const alertsContainer = document.getElementById('alertsContainer');
+            const alerts = medicalData.alerts;
+
+            if (alerts.length === 0) {
+                alertsContainer.innerHTML = `
+                    <div class="col-span-full text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">✅</div>
+                        <p>No critical alerts at this time</p>
+                    </div>
+                `;
+                return;
+            }
+
+            alertsContainer.innerHTML = alerts.map(alert => `
+                <div class="data-card bg-white rounded-lg shadow p-4 ${getAlertClass(alert.severity)}">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h4 class="font-semibold text-sm">${alert.type}</h4>
+                            <p class="text-xs text-gray-600 mt-1">Room ${alert.room} - ${alert.patient}</p>
+                            <p class="text-xs mt-2">${alert.message}</p>
+                        </div>
+                        <span class="px-2 py-1 rounded-full text-xs font-medium ${getAlertBadgeClass(alert.severity)}">
+                            ${alert.severity}
+                        </span>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-500">
+                        ${new Date(alert.timestamp).toLocaleTimeString()}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getAlertClass(severity) {
+            switch (severity) {
+                case 'Critical': return 'alert-critical';
+                case 'High': return 'alert-warning';
+                default: return 'alert-normal';
+            }
+        }
+
+        function getAlertBadgeClass(severity) {
+            switch (severity) {
+                case 'Critical': return 'bg-red-100 text-red-800';
+                case 'High': return 'bg-yellow-100 text-yellow-800';
+                default: return 'bg-green-100 text-green-800';
+            }
+        }
+
+        function renderPatientTable() {
+            const tbody = document.getElementById('patientTableBody');
+            const patients = medicalData.patients;
+
+            tbody.innerHTML = patients.map(patient => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">${patient.initials}</div>
+                                <div class="text-sm text-gray-500">Room ${patient.room} • ${patient.age}yo ${patient.sex}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">BP: ${patient.vitals.bp}</div>
+                        <div class="text-sm text-gray-500">HR: ${patient.vitals.hr} • Temp: ${patient.vitals.temp}°F</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">Glucose: ${patient.labs.glucose}</div>
+                        <div class="text-sm text-gray-500">Cr: ${patient.labs.creatinine} • K+: ${patient.labs.potassium}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${patient.medications.length} medications</div>
+                        <div class="text-sm text-gray-500">${patient.medications.slice(0, 2).join(', ')}${patient.medications.length > 2 ? '...' : ''}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium ${getRiskBadgeClass(patient.riskScore)}">
+                            ${patient.riskScore}/10
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeClass(patient.status)}">
+                            ${patient.status}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getRiskBadgeClass(score) {
+            if (score >= 7) return 'bg-red-100 text-red-800';
+            if (score >= 4) return 'bg-yellow-100 text-yellow-800';
+            return 'bg-green-100 text-green-800';
+        }
+
+        function getStatusBadgeClass(status) {
+            switch (status) {
+                case 'Critical': return 'bg-red-100 text-red-800';
+                case 'Moderate': return 'bg-yellow-100 text-yellow-800';
+                case 'Stable': return 'bg-green-100 text-green-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function renderInsights() {
+            const insights = [
+                "📈 Blood pressure control improved by 15% this week",
+                "💊 Medication compliance rate at 85% - above target",
+                "⚠️ 3 patients require immediate attention for elevated vitals",
+                "📊 Average length of stay trending downward",
+                "🎯 Risk stratification helping prioritize care"
+            ];
+
+            const qualityMetrics = [
+                "✅ 95% of patients have documented care plans",
+                "📋 88% medication reconciliation completion rate",
+                "🔄 92% of high-risk patients seen within 24 hours",
+                "📊 78% patient satisfaction score",
+                "⚡ 15% reduction in readmission rate"
+            ];
+
+            document.getElementById('clinicalInsights').innerHTML = insights.map(insight => 
+                `<div class="text-sm text-gray-700">${insight}</div>`
+            ).join('');
+
+            document.getElementById('qualityMetrics').innerHTML = qualityMetrics.map(metric => 
+                `<div class="text-sm text-gray-700">${metric}</div>`
+            ).join('');
+        }
+
+        function refreshData() {
+            // Simulate data refresh
+            generateSampleData();
+            updateDashboard();
+            alert('Medical data refreshed successfully!');
+        }
+
+        function exportMedicalReport() {
+            const report = generateMedicalReport();
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(report).then(() => {
+                    alert('Medical report copied to clipboard!');
+                });
+            } else {
+                // Fallback
+                const textArea = document.createElement('textarea');
+                textArea.value = report;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('Medical report copied to clipboard!');
+            }
+        }
+
+        function generateMedicalReport() {
+            const patients = medicalData.patients;
+            const alerts = medicalData.alerts;
+            const date = new Date().toLocaleDateString();
+            
+            let report = `MEDICAL DATA DASHBOARD REPORT\n`;
+            report += `Generated: ${date}\n`;
+            report += `Shaare Zedek Medical Center - Geriatrics Department\n\n`;
+            
+            report += `SUMMARY:\n`;
+            report += `Total Patients: ${patients.length}\n`;
+            report += `Critical Alerts: ${alerts.length}\n`;
+            report += `High Risk Patients: ${patients.filter(p => p.riskScore >= 7).length}\n\n`;
+            
+            report += `CRITICAL ALERTS:\n`;
+            if (alerts.length === 0) {
+                report += `No critical alerts at this time.\n\n`;
+            } else {
+                alerts.forEach(alert => {
+                    report += `• ${alert.type} - Room ${alert.room} (${alert.patient})\n`;
+                    report += `  ${alert.message}\n`;
+                });
+                report += `\n`;
+            }
+            
+            report += `PATIENT DETAILS:\n`;
+            patients.forEach(patient => {
+                report += `Room ${patient.room}: ${patient.initials} (${patient.age}yo ${patient.sex})\n`;
+                report += `  Diagnosis: ${patient.diagnosis.join(', ')}\n`;
+                report += `  Vitals: BP ${patient.vitals.bp}, HR ${patient.vitals.hr}, Temp ${patient.vitals.temp}°F\n`;
+                report += `  Labs: Glucose ${patient.labs.glucose}, Cr ${patient.labs.creatinine}, K+ ${patient.labs.potassium}\n`;
+                report += `  Risk Score: ${patient.riskScore}/10 (${patient.status})\n`;
+                report += `  Medications: ${patient.medications.join(', ')}\n\n`;
+            });
+            
+            return report;
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
