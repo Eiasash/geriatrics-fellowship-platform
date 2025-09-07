@@ -7,8 +7,14 @@
   "scripts": {
     "build": "echo 'No build required for static HTML'",
     "serve": "npx serve .",
-    "deploy": "netlify deploy --prod",
-    "deploy:preview": "netlify deploy"
+    "start": "npx serve . -p 3000",
+    "dev": "npx serve . -p 3000",
+    "deploy:netlify": "netlify deploy --prod",
+    "deploy:netlify:preview": "netlify deploy",
+    "deploy:vercel": "vercel --prod",
+    "deploy:vercel:preview": "vercel",
+    "deploy": "npm run deploy:netlify",
+    "deploy:preview": "npm run deploy:netlify:preview"
   },
   "devDependencies": {},
   "dependencies": {},
